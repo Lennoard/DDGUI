@@ -9,4 +9,11 @@
     <string name="conversions">Conversions</string>
     <string name="in_flags">In flags</string>
     <string name="out_flags">Out flags</string>
+    <string name="exit">Exit</string>
+    <string name="next">Next</string>
+    <string name="disclaimer">Disclaimer</string>
+    <string name="disclaimer_headline">This application is for experts only!</string>
+    <string name="disclaimer1">THIS APPLICATION CAN BE DANGEROUS. Under any circumstances, Android VIP or anyone who contributed to the source code for this application shall have no liability for any damages or losses caused by it.</string>
+    <string name="disclaimer2">DD GUI is free and open source software made in hope that it will be useful to someone. By choosing to use this application, you and only you will be responsible for what you do with it.</string>
+    <string name="disclaimer_accept">I know what I am doing</string>
 </resources>
