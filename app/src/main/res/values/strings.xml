@@ -16,4 +16,7 @@
     <string name="disclaimer1">THIS APPLICATION CAN BE DANGEROUS. Under any circumstances, Android VIP or anyone who contributed to the source code for this application shall have no liability for any damages or losses caused by it.</string>
     <string name="disclaimer2">DD GUI is free and open source software made in hope that it will be useful to someone. By choosing to use this application, you and only you will be responsible for what you do with it.</string>
     <string name="disclaimer_accept">I know what I am doing</string>
+    <string name="failed">Failed</string>
+    <string name="create">Create</string>
+    <string name="root_not_found">Root access not found or denied by superuser app!</string>
 </resources>

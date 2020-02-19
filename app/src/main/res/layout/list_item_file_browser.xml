@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/listFileBrowserLayout"
+    android:orientation="horizontal"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/listFileBrowserIcon"
+        android:padding="4dp"
+        android:tint="#ffea00"
+        android:src="@drawable/ic_folder"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/listFileBrowserName"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:gravity="center_vertical"
+        android:textColor="#ffffff"/>
+
+</LinearLayout>

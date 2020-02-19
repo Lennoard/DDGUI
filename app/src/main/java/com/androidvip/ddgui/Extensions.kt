@@ -13,7 +13,10 @@ import kotlinx.coroutines.withContext
 
 fun View.goAway() { this.visibility = View.GONE }
 fun View.hide() { this.visibility = View.INVISIBLE }
-fun View.show() { this.visibility = View.VISIBLE }
+fun View.show(): View {
+    this.visibility = View.VISIBLE
+    return this
+}
 
 fun Context?.toast(messageRes: Int, length: Int = Toast.LENGTH_SHORT) {
     if (this == null) return
