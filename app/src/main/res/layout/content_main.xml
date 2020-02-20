@@ -13,530 +13,260 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:animateLayoutChanges="true">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorAccent"
-            android:layout_marginTop="8dp"
-            android:text="@string/basic"/>
-
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            android:layout_marginTop="8dp">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
-
-                <ImageView
-                    android:id="@+id/inputIcon"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:src="@drawable/ic_file_import"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/inputHeading"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/inputHeading" />
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="#ff9800"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/inputIcon"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    style="@style/TextAppearance.MaterialComponents.Headline5"
-                    android:id="@+id/inputHeading"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/input"
-                    app:layout_constraintBottom_toTopOf="@+id/inputPath"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/inputIcon"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_chainStyle="packed" />
-
-                <EditText
-                    android:id="@+id/inputPath"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/path"
-                    android:importantForAutofill="no"
-                    android:inputType="textUri"
-                    app:layout_constraintBottom_toTopOf="@+id/inputPick"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/inputHeading"
-                    app:layout_constraintTop_toBottomOf="@+id/inputHeading" />
-
-                <Button
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:id="@+id/inputPick"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pick"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            android:layout_marginTop="8dp">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
-
-                <ImageView
-                    android:id="@+id/outputIcon"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:src="@drawable/ic_file_export"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/outputHeading"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/outputHeading" />
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="#ff9800"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/outputIcon"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    style="@style/TextAppearance.MaterialComponents.Headline5"
-                    android:id="@+id/outputHeading"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Output"
-                    app:layout_constraintBottom_toTopOf="@+id/outputPath"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/outputIcon"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_chainStyle="packed" />
-
-                <EditText
-                    android:id="@+id/outputPath"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/path"
-                    android:importantForAutofill="no"
-                    android:inputType="textUri"
-                    app:layout_constraintBottom_toTopOf="@+id/outputPick"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/outputHeading"
-                    app:layout_constraintTop_toBottomOf="@+id/outputHeading" />
-
-                <Button
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:id="@+id/outputPick"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pick"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="?attr/colorAccent"
+            android:id="@+id/resultLayout"
+            android:orientation="vertical"
             android:layout_marginTop="16dp"
-            android:text="@string/advanced"
-            android:visibility="gone"/>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            android:layout_marginTop="8dp"
             android:visibility="gone">
 
-            <LinearLayout
+            <TextView
+                style="@style/TextAppearance.MaterialComponents.Headline5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:id="@+id/resultHeadline"
+                android:gravity="center"
+                android:text="@string/executing"/>
 
-                <TextView
-                    style="@style/TextAppearance.MaterialComponents.Headline5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="8dp"
-                    android:text="@string/conversions" />
+            <ProgressBar
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/resultProgress"
+                android:indeterminate="true"
+                android:layout_marginTop="16dp"/>
 
-                <com.google.android.material.chip.ChipGroup
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/convsChipGroup"
-                    app:chipSpacingHorizontal="4dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/resultOutput"
+                android:layout_marginTop="16dp"
+                app:fontFamily="monospace" />
 
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ascii" />
+        </LinearLayout>
 
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ebcdic" />
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ibm" />
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="block" />
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="unblock"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="lcase"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ucase"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="sparse"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="swab"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="sync"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="excl"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="nocreat"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="notrunc"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="noerror"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="fdatasync"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="fsync"/>
-
-                </com.google.android.material.chip.ChipGroup>
-
-            </LinearLayout>
-
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            android:layout_marginTop="8dp"
-            android:visibility="gone">
+            android:id="@+id/optionsLayout"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:textColor="?attr/colorAccent"
+                android:layout_marginTop="8dp"
+                android:text="@string/basic"/>
 
-                <TextView
-                    style="@style/TextAppearance.MaterialComponents.Headline5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="8dp"
-                    android:text="@string/in_flags" />
 
-                <com.google.android.material.chip.ChipGroup
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/inFlagsChipGroup"
-                    app:chipSpacingHorizontal="4dp">
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="append" />
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="direct" />
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="directory" />
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="dsync" />
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="sync"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="fullblock"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="nonblock"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="noatime"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="nocache"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="noctty"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="nofollow"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="count_bytes"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="skip_bytes"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="seek_bytes"/>
-
-                </com.google.android.material.chip.ChipGroup>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            android:layout_marginTop="8dp"
-            android:visibility="gone">
-
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="8dp">
 
-                <TextView
-                    style="@style/TextAppearance.MaterialComponents.Headline5"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="8dp"
-                    android:text="@string/out_flags" />
+                    android:padding="16dp">
 
-                <com.google.android.material.chip.ChipGroup
+                    <ImageView
+                        android:id="@+id/inputIcon"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:src="@drawable/ic_file_import"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/inputHeading"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/inputHeading" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="#ff9800"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/inputIcon"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        style="@style/TextAppearance.MaterialComponents.Headline5"
+                        android:id="@+id/inputHeading"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/input"
+                        app:layout_constraintBottom_toTopOf="@+id/inputPath"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/inputIcon"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_chainStyle="packed" />
+
+                    <EditText
+                        android:id="@+id/inputPath"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/path"
+                        android:importantForAutofill="no"
+                        android:inputType="textUri"
+                        app:layout_constraintBottom_toTopOf="@+id/inputPick"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/inputHeading"
+                        app:layout_constraintTop_toBottomOf="@+id/inputHeading" />
+
+                    <Button
+                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        android:id="@+id/inputPick"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pick"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="8dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/outFlagsChipGroup"
-                    app:chipSpacingHorizontal="4dp">
+                    android:padding="16dp">
 
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
+                    <ImageView
+                        android:id="@+id/outputIcon"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:src="@drawable/ic_file_export"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/outputHeading"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/outputHeading" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="#ff9800"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/outputIcon"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        style="@style/TextAppearance.MaterialComponents.Headline5"
+                        android:id="@+id/outputHeading"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Output"
+                        app:layout_constraintBottom_toTopOf="@+id/outputPath"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/outputIcon"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_chainStyle="packed" />
+
+                    <EditText
+                        android:id="@+id/outputPath"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/path"
+                        android:importantForAutofill="no"
+                        android:inputType="textUri"
+                        app:layout_constraintBottom_toTopOf="@+id/outputPick"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/outputHeading"
+                        app:layout_constraintTop_toBottomOf="@+id/outputHeading" />
+
+                    <Button
+                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        android:id="@+id/outputPick"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="append" />
+                        android:text="@string/pick"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        />
 
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorAccent"
+                android:layout_marginTop="16dp"
+                android:text="@string/advanced"
+                android:visibility="gone"/>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        style="@style/TextAppearance.MaterialComponents.Headline5"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="direct" />
+                        android:textSize="18sp"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/conversions" />
 
-                    <com.google.android.material.chip.Chip
+                    <CheckBox
                         style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="directory" />
+                        android:text="Do not truncate output file"
+                        android:tag="notrunc"/>
 
-                    <com.google.android.material.chip.Chip
+                    <CheckBox
                         style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="dsync" />
+                        android:text="Continue after read errors"
+                        android:tag="noerror"/>
 
-                    <com.google.android.material.chip.Chip
+                    <CheckBox
                         style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="sync"/>
+                        android:text="Pad blocks with zeros"
+                        android:tag="sync"/>
 
-                    <com.google.android.material.chip.Chip
+                    <CheckBox
                         style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="fullblock"/>
+                        android:text="Physically write data out before finishing"
+                        android:tag="fsync"/>
 
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="nonblock"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="noatime"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="nocache"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="noctty"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="nofollow"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="count_bytes"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="skip_bytes"/>
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/CheckableChip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="seek_bytes"/>
-
-                </com.google.android.material.chip.ChipGroup>
-
-            </LinearLayout>
+                </LinearLayout>
 
 
-        </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
 
     </LinearLayout>
 

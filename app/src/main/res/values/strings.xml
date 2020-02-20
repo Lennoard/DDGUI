@@ -19,4 +19,9 @@
     <string name="failed">Failed</string>
     <string name="create">Create</string>
     <string name="root_not_found">Root access not found or denied by superuser app!</string>
+    <string name="error_missing_input">Please select an input file</string>
+    <string name="error_missing_output">Please select an output file</string>
+    <string name="result">Result</string>
+    <string name="executing">Executing…</string>
+    <string name="finished">Finished</string>
 </resources>

@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.Window
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
@@ -16,11 +17,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.androidvip.ddgui.R
+import com.androidvip.ddgui.*
 import com.androidvip.ddgui.adapters.FileBrowserAdapter
 import com.androidvip.ddgui.helpers.FileChangedListener
-import com.androidvip.ddgui.runSafeOnUiThread
-import com.androidvip.ddgui.toast
+import com.google.android.material.snackbar.Snackbar
+import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
 import kotlinx.android.synthetic.main.activity_main.*
@@ -30,7 +31,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-
 
 class MainActivity : AppCompatActivity(), FileChangedListener {
     private var currentPath = "/"
@@ -54,6 +54,46 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        Shell.Config.setFlags(Shell.FLAG_REDIRECT_STDERR)
+
+        fun setUpClickListeners() {
+            inputPick.setOnClickListener {
+                fileBrowserAdapter.container = inputPath
+                showPickFileDialog()
+            }
+
+            outputPick.setOnClickListener {
+                fileBrowserAdapter.container = outputPath
+                showPickFileDialog()
+            }
+
+            fab.setOnClickListener {
+                if (checkInputFields()) {
+                    val `if` = inputPath.text.toString().trim()
+                    val `out` = outputPath.text.toString().trim()
+
+                    optionsLayout.goAway()
+                    resultLayout.show()
+                    fab.hide()
+                    resultProgress.show()
+                    resultHeadline.text = getString(R.string.executing)
+
+                    val callbackList: List<String> = object : CallbackList<String>() {
+                        @MainThread
+                        override fun onAddElement(s: String) {
+                            resultOutput.text = "${resultOutput.text}\n$s"
+                        }
+                    }
+
+                    Shell.su("dd if=$`if` of=$`out`").to(callbackList).submit {
+                        resultHeadline.text = getString(R.string.finished)
+                        resultProgress.goAway()
+                    }
+                    Shell.su("watch -n1 'kill -USR1 \$(pgrep ^dd)'").submit()
+                }
+            }
+        }
+
         GlobalScope.launch {
             val isRooted = Shell.rootAccess()
             val activity = this@MainActivity
@@ -61,15 +101,7 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
             runSafeOnUiThread {
                 if (isRooted) {
                     fileBrowserAdapter = FileBrowserAdapter(arrayOf(), activity, inputPath, activity)
-                    inputPick.setOnClickListener {
-                        fileBrowserAdapter.container = inputPath
-                        showPickFileDialog()
-                    }
-
-                    outputPick.setOnClickListener {
-                        fileBrowserAdapter.container = outputPath
-                        showPickFileDialog()
-                    }
+                    setUpClickListeners()
                 } else {
                     AlertDialog.Builder(activity)
                         .setIcon(R.drawable.ic_error)
@@ -164,6 +196,22 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
                     fileBrowserAdapter.updateData(it)
                 }
             }
+        }
+    }
+
+    private fun checkInputFields(): Boolean {
+        return when {
+            inputPath.text.toString().isEmpty() -> {
+                Snackbar.make(inputPath, R.string.error_missing_input, Snackbar.LENGTH_LONG).show()
+                false
+            }
+
+            outputPath.text.toString().isEmpty() -> {
+                Snackbar.make(outputPath, R.string.error_missing_output, Snackbar.LENGTH_LONG).show()
+                false
+            }
+
+            else -> true
         }
     }
 }
