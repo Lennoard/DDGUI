@@ -8,7 +8,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.Window
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.annotation.IntDef
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -33,7 +36,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 class MainActivity : AppCompatActivity(), FileChangedListener {
-    private var currentPath = "/"
+    @State private var currentState: Int = STATE_IDLE
+    private var currentFilePath = File("/")
     private lateinit var fileBrowserAdapter: FileBrowserAdapter
     private val prefs: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(this)
@@ -43,8 +47,17 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             setContentView(R.layout.dialog_pick_files)
             setCancelable(true)
-            setOnDismissListener {
-                currentPath = "/"
+
+            this.findViewById<ImageView>(R.id.pickFilesHome).setOnClickListener {
+                currentFilePath = File("/")
+                refreshList()
+            }
+
+            this.findViewById<ImageView>(R.id.pickFilesLevelUp).setOnClickListener {
+                runCatching {
+                    currentFilePath = currentFilePath.parentFile
+                    refreshList()
+                }
             }
         }
     }
@@ -69,11 +82,13 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
 
             fab.setOnClickListener {
                 if (checkInputFields()) {
+                    currentState = STATE_EXECUTING
+
                     val `if` = inputPath.text.toString().trim()
                     val `out` = outputPath.text.toString().trim()
 
-                    optionsLayout.goAway()
                     resultLayout.show()
+                    optionsLayout.goAway()
                     fab.hide()
                     resultProgress.show()
                     resultHeadline.text = getString(R.string.executing)
@@ -88,6 +103,8 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
                     Shell.su("dd if=$`if` of=$`out`").to(callbackList).submit {
                         resultHeadline.text = getString(R.string.finished)
                         resultProgress.goAway()
+
+                        currentState = STATE_EXECUTED
                     }
                     Shell.su("watch -n1 'kill -USR1 \$(pgrep ^dd)'").submit()
                 }
@@ -117,6 +134,41 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
         }
     }
 
+    override fun onBackPressed() {
+        when (currentState) {
+            STATE_EXECUTING -> {
+                AlertDialog.Builder(this)
+                    .setTitle(android.R.string.dialog_alert_title)
+                    .setMessage("There are operations pending, do you really want to quit now?")
+                    .setPositiveButton(android.R.string.yes) { _, _ ->
+                        super.onBackPressed()
+                    }
+                    .setNegativeButton(android.R.string.no) { _, _ ->  }
+                    .show()
+            }
+
+            STATE_EXECUTED -> {
+                resultLayout.goAway()
+                optionsLayout.show()
+                fab.show()
+                resultProgress.hide()
+                resultHeadline.text = getString(R.string.executing)
+
+                currentState = STATE_IDLE
+            }
+
+            else -> super.onBackPressed()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        runCatching {
+            Shell.getCachedShell()?.close()
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
@@ -143,10 +195,8 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
 
     override fun onFileChanged(newFile: File, container: EditText) {
         if (newFile.isDirectory) {
-            val newPath = newFile.absolutePath
-
-            if (newPath.isNotEmpty()) {
-                currentPath = newPath
+            if (newFile.absolutePath.isNotEmpty()) {
+                currentFilePath = newFile
                 refreshList()
             } else {
                 toast("Invalid path")
@@ -154,7 +204,6 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
         } else {
             container.setText(newFile.absolutePath)
             pickFileDialog.dismiss()
-            currentPath = "/"
         }
     }
 
@@ -174,12 +223,14 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
         }
 
         pickFileDialog.show()
-        refreshList()
+        if (currentFilePath.absolutePath == "/") {
+            refreshList()
+        }
     }
 
     private suspend fun getCurrentPathFiles() : Array<File>? = withContext(Dispatchers.IO) {
         runCatching {
-            SuFile.open(currentPath).listFiles()
+            SuFile.open(currentFilePath.absolutePath).listFiles()
         }.getOrDefault(arrayOf<File>())
     }
 
@@ -193,6 +244,7 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
             runSafeOnUiThread {
                 swipeLayout?.isRefreshing = false
                 files?.let {
+                    pickFileDialog.findViewById<TextView>(R.id.pickFilesCurrentPath)?.text = currentFilePath.absolutePath
                     fileBrowserAdapter.updateData(it)
                 }
             }
@@ -213,5 +265,15 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
 
             else -> true
         }
+    }
+
+    companion object {
+        @IntDef(STATE_IDLE, STATE_EXECUTING, STATE_EXECUTED)
+        @Retention(AnnotationRetention.SOURCE)
+        annotation class State
+
+        const val STATE_IDLE = 0
+        const val STATE_EXECUTING = 1
+        const val STATE_EXECUTED = 2
     }
 }

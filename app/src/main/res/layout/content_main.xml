@@ -233,28 +233,24 @@
                         android:text="@string/conversions" />
 
                     <CheckBox
-                        style="@style/CheckableChip"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Do not truncate output file"
                         android:tag="notrunc"/>
 
                     <CheckBox
-                        style="@style/CheckableChip"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Continue after read errors"
                         android:tag="noerror"/>
 
                     <CheckBox
-                        style="@style/CheckableChip"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Pad blocks with zeros"
                         android:tag="sync"/>
 
                     <CheckBox
-                        style="@style/CheckableChip"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Physically write data out before finishing"

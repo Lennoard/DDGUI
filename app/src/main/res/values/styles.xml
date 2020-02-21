@@ -17,17 +17,10 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat" />
 
-    <style name="CheckableChip" parent="Base.Widget.MaterialComponents.Chip">
-        <item name="android:checkable">true</item>
-
-        <item name="chipIconVisible">true</item>
-        <item name="checkedIconVisible">true</item>
-        <item name="closeIconVisible">false</item>
-
-        <item name="checkedIcon">@drawable/ic_check</item>
-
-        <item name="rippleColor">@color/mtrl_choice_chip_ripple_color</item>
-
+    <style name="SelectableItemBackgroundBorderless">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
 </resources>
