@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Einstellungen</string>
+    <string name="path">Pfad</string>
+    <string name="input">Input</string>
+    <string name="output">Output</string>
+    <string name="pick">Auswählen</string>
+    <string name="basic">Basic</string>
+    <string name="advanced">Erweitert</string>
+    <string name="conversions">Umwandlungen</string>
+    <string name="in_flags">In flags</string>
+    <string name="out_flags">Out flags</string>
+    <string name="exit">Beenden</string>
+    <string name="next">Weiter</string>
+    <string name="disclaimer">Ausschlussklausel</string>
+    <string name="disclaimer_headline">Diese App ist nur für Experten!</string>
+    <string name="disclaimer1">DIESE APP KANN GEFÄHRLICH SEIN. Android VIP oder Mitwirkende des Quellcodes übernehmen keine Haftung für Schäden oder Verlusten, die durch diese Anwendung entstanden sind.</string>
+    <string name="disclaimer2">DD GUI is freie und opensource Software mit der Hoffnung das es für jemanden nützlich ist. Mit der Verwendung dieser Anwendung stehen sie selbst in Verantwortung der Folgen.</string>
+    <string name="disclaimer_accept">Ich weis was ich tue</string>
+    <string name="failed">Fehlgeschlagen</string>
+    <string name="create">Erstellen</string>
+    <string name="root_not_found">Root Zugriff verweigert oder durch SuperUser App verweigert!</string>
+    <string name="error_missing_input">Bitte eine Eingabedatei auswählen</string>
+    <string name="error_missing_output">Bitte eine Ausgabedatei auswählen</string>
+    <string name="result">Resultat</string>
+    <string name="executing">In Bearbeitung…</string>
+    <string name="finished">Abgeschlossen</string>
+</resources>

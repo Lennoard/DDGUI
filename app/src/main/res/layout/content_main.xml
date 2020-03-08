@@ -169,7 +169,7 @@
                         android:id="@+id/outputHeading"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Output"
+                        android:text="@string/output"
                         app:layout_constraintBottom_toTopOf="@+id/outputPath"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/outputIcon"
