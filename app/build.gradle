@@ -11,7 +11,7 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "0.1"
-        resConfigs "en", "pt-rBR"
+        resConfigs "en", "de", "pt-rBR"
     }
 
     buildTypes {

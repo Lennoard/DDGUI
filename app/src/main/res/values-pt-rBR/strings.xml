@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Configurações</string>
+    <string name="advanced">Avançado</string>
+    <string name="basic">Básico</string>
+    <string name="conversions">Conversões</string>
+    <string name="create">Criar</string>
+    <string name="disclaimer">Aviso legal</string>
+    <string name="disclaimer_accept">Sei o que estou fazendo</string>
+    <string name="disclaimer_headline">Este aplicativo é apenas para especialistas!</string>
+    <string name="disclaimer1">ESTE APLICATIVO PODE SER PERIGOSO. Sob nenhuma circunstância, o Android VIP ou qualquer pessoa que contribuiu com o código-fonte deste aplicativo não deverá se responsabilizar por quaisquer danos ou perdas causados por ele.</string>
+    <string name="disclaimer2">DD GUI é um software livre e de código aberto (FOSS) criado na esperança de que seja útil a alguém. Ao optar por usar este aplicativo, você e somente você será responsável pelo que faz com ele.</string>
+    <string name="error_missing_input">Por favor, selecione um arquivo de entrada</string>
+    <string name="error_missing_output">Por favor, selecione o arquivo de saída</string>
+    <string name="executing">Executando…</string>
+    <string name="exit">Sair</string>
+    <string name="failed">Falha</string>
+    <string name="finished">Finalizado</string>
+    <string name="in_flags">Flags de entrada</string>
+    <string name="next">Próximo</string>
+    <string name="options">Opções</string>
+    <string name="input">Entrada</string>
+    <string name="out_flags">Flags de saída</string>
+    <string name="output">Saída</string>
+    <string name="path">caminho</string>
+    <string name="pick">Escolher</string>
+    <string name="result">Resultado</string>
+    <string name="root_not_found">Acesso root não encontrado ou negado pelo aplicativo de superusuário!</string>
+</resources>
