@@ -20,6 +20,7 @@
             android:layout_weight="1"
             android:id="@+id/pickFilesCurrentPath"
             android:text="/"
+            android:fontFamily="monospace"
             android:singleLine="true"
             android:ellipsize="middle"
             android:layout_marginLeft="8dp"

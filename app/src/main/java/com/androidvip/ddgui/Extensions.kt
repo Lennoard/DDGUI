@@ -2,10 +2,8 @@ package com.androidvip.ddgui
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Color
 import android.view.View
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -31,6 +29,10 @@ fun Context?.toast(message: String?, length: Int = Toast.LENGTH_SHORT) {
     GlobalScope.launch(Dispatchers.Main) {
         Toast.makeText(ctx, message, length).show()
     }
+}
+
+fun <E> MutableCollection<E>.addIf(condition: Boolean, e: E) {
+    if (condition) this.add(e)
 }
 
 suspend inline fun Activity?.runSafeOnUiThread(crossinline uiBlock: () -> Unit) {

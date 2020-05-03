@@ -231,7 +231,7 @@ class MainActivity : AppCompatActivity(), FileChangedListener {
     private suspend fun getCurrentPathFiles() : Array<File>? = withContext(Dispatchers.IO) {
         runCatching {
             SuFile.open(currentFilePath.absolutePath).listFiles()
-        }.getOrDefault(arrayOf<File>())
+        }.getOrDefault(arrayOf())
     }
 
     private fun refreshList() {

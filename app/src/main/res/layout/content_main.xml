@@ -59,6 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="?attr/colorAccent"
+                android:fontFamily="monospace"
                 android:layout_marginTop="8dp"
                 android:text="@string/basic"/>
 
@@ -96,11 +97,12 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        style="@style/TextAppearance.MaterialComponents.Headline5"
+                        style="@style/CardHeading"
                         android:id="@+id/inputHeading"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="@string/input"
+                        android:fontFamily="monospace"
                         app:layout_constraintBottom_toTopOf="@+id/inputPath"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/inputIcon"
@@ -124,6 +126,7 @@
                         android:id="@+id/inputPick"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
                         android:text="@string/pick"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
@@ -165,7 +168,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        style="@style/TextAppearance.MaterialComponents.Headline5"
+                        style="@style/CardHeading"
                         android:id="@+id/outputHeading"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -194,6 +197,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/pick"
+                        android:fontFamily="monospace"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         />

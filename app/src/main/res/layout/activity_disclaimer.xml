@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -18,11 +17,19 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="16dp"
+                android:tint="?attr/colorOnSurface"
+                android:src="@drawable/ic_error"
+                android:layout_gravity="center_horizontal"/>
+
             <TextView
-                style="@style/TextAppearance.MaterialComponents.Headline3"
+                style="@style/TextAppearance.MaterialComponents.Headline4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:textColor="?attr/colorOnSurface"
                 android:text="@string/disclaimer"/>
@@ -38,6 +45,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="monospace"
                 android:text="@string/disclaimer1"
                 android:layout_marginTop="24dp"/>
 
@@ -45,6 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="monospace"
                 android:text="@string/disclaimer2"/>
 
             <CheckBox
@@ -52,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/disclaimerAccept"
                 android:text="@string/disclaimer_accept"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:padding="8dp"/>
 
         </LinearLayout>

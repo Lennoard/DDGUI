@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.androidvip.ddgui.R
+import com.androidvip.ddgui.addIf
 import com.androidvip.ddgui.helpers.FileChangedListener
 import java.io.File
 
@@ -73,9 +74,7 @@ class FileBrowserAdapter(
     private fun filterAndSortByName(files: Array<File>) {
         dataSet.clear()
         files.forEach {
-            if ((it.exists() || it.isDirectory)) {
-                dataSet.add(it)
-            }
+            dataSet.addIf(it.exists() || it.isDirectory, it)
         }
 
         dataSet.sort()
