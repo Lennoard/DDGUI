@@ -6,21 +6,20 @@ import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.androidvip.ddgui.R
 import com.androidvip.ddgui.addIf
-import com.androidvip.ddgui.helpers.FileChangedListener
+import com.androidvip.ddgui.helpers.OnFileSelectedListener
+import com.topjohnwu.superuser.io.SuFile
 import java.io.File
 
 class FileBrowserAdapter(
     allFiles: Array<File>,
     private val context: Context,
-    var container: EditText,
-    private val fileChangedListener: FileChangedListener
+    private val onFileSelectedListener: OnFileSelectedListener?
 ) : RecyclerView.Adapter<FileBrowserAdapter.ViewHolder>() {
     private val dataSet = mutableListOf<File>()
 
@@ -58,7 +57,7 @@ class FileBrowserAdapter(
 
         holder.name.text = file.name
         holder.itemLayout.setOnClickListener {
-            fileChangedListener.onFileChanged(file, container)
+            onFileSelectedListener?.onFileSelected(file)
         }
     }
 

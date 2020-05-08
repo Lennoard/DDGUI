@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:minWidth="320dp"
+    android:minWidth="340dp"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:orientation="vertical">
@@ -13,6 +13,23 @@
         android:padding="8dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
+
+        <ImageView
+            style="@style/SelectableItemBackgroundBorderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pickFilesLevelUp"
+            android:src="@drawable/ic_directory_up"
+            android:padding="8dp"/>
+
+        <ImageView
+            style="@style/SelectableItemBackgroundBorderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pickFilesForward"
+            android:src="@drawable/ic_directory_forward"
+            android:tint="#80000000"
+            android:padding="8dp"/>
 
         <TextView
             android:layout_width="0dp"
@@ -26,28 +43,13 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp" />
 
-        <ImageView
-            style="@style/SelectableItemBackgroundBorderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/pickFilesHome"
-            android:src="@drawable/ic_home_circle"
-            android:padding="8dp"/>
-
-        <ImageView
-            style="@style/SelectableItemBackgroundBorderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/pickFilesLevelUp"
-            android:src="@drawable/ic_directory_up"
-            android:padding="8dp"/>
-
     </LinearLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/pickFilesSwipeLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
@@ -55,5 +57,33 @@
             android:id="@+id/pickFilesRecyclerView"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:padding="8dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            style="@style/SelectableItemBackgroundBorderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pickFilesRootFolder"
+            android:src="@drawable/ic_root_folder_circle"
+            android:padding="8dp"/>
+
+        <ImageView
+            style="@style/SelectableItemBackgroundBorderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pickFilesHomeFolder"
+            android:src="@drawable/ic_home_folder_circle"
+            android:padding="8dp"/>
+
+        
+
+    </LinearLayout>
 
 </LinearLayout>

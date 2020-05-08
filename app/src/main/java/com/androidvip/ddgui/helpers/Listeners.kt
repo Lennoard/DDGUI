@@ -1,9 +1,8 @@
 package com.androidvip.ddgui.helpers
 
-import android.widget.EditText
+import com.topjohnwu.superuser.io.SuFile
 import java.io.File
 
-interface FileChangedListener {
-    fun onFileChanged(newFile: File, container: EditText)
-
+interface OnFileSelectedListener {
+    fun onFileSelected(newFile: File)
 }
