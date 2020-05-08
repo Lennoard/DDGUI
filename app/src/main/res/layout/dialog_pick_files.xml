@@ -82,7 +82,26 @@
             android:src="@drawable/ic_home_folder_circle"
             android:padding="8dp"/>
 
-        
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <ImageView
+            style="@style/SelectableItemBackgroundBorderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pickFilesNewFile"
+            android:src="@drawable/ic_file_new"
+            android:padding="8dp"/>
+
+        <ImageView
+            style="@style/SelectableItemBackgroundBorderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pickFilesNewFolder"
+            android:src="@drawable/ic_folder_new"
+            android:padding="6dp"/>
 
     </LinearLayout>
 

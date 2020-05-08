@@ -15,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.androidvip.ddgui.R
 import com.androidvip.ddgui.adapters.FileBrowserAdapter
 import com.androidvip.ddgui.runSafeOnUiThread
+import com.androidvip.ddgui.toast
 import com.topjohnwu.superuser.io.SuFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -113,6 +114,38 @@ class PickFileDialog(activity: Activity, val fileSelectedCallback: (File) -> Uni
                 files?.let {
                     dialog.findViewById<TextView>(R.id.pickFilesCurrentPath)?.text = currentFile.absolutePath
                     fileBrowserAdapter.updateData(it)
+                }
+
+                dialog.findViewById<ImageView>(R.id.pickFilesNewFolder).setOnClickListener {
+                    EditDialog(weakActivity.get()!!) {
+                        val newDir = SuFile("${currentFile.absolutePath}/$it")
+                        if (newDir.mkdir()) {
+                            currentFile = newDir
+                            refreshList()
+                        } else {
+                            weakActivity.get()!!.toast(weakActivity.get()!!.getString(R.string.create_folder_fail))
+                        }
+
+                    }.buildApplying {
+                        setTitle(R.string.new_folder)
+                        show()
+                    }
+                }
+
+                dialog.findViewById<ImageView>(R.id.pickFilesNewFile).setOnClickListener {
+                    EditDialog(weakActivity.get()!!) {
+                        val createdFile = SuFile("${currentFile.absolutePath}/$it")
+                        if (createdFile.createNewFile()) {
+                            fileSelectedCallback(createdFile)
+                            dialog.dismiss()
+                        } else {
+                            weakActivity.get()!!.toast(weakActivity.get()!!.getString(R.string.create_file_fail))
+                        }
+
+                    }.buildApplying {
+                        setTitle(R.string.new_file)
+                        show()
+                    }
                 }
             }
         }
