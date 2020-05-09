@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="TitleBarTextAppearance" parent="android:TextAppearance">
-        <item name="android:fontFamily">monospace</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">20sp</item>
-    </style>
-
     <style name="TextAppearanceDialogWindowTitle" parent="TextAppearance.AppCompat.Title">
         <item name="android:textColor">@color/colorAccent</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">monospace</item>
+        <item name="fontFamily">monospace</item>
     </style>
 
     <style name="DialogButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
         <item name="android:fontFamily">monospace</item>
+        <item name="fontFamily">monospace</item>
     </style>
 </resources>

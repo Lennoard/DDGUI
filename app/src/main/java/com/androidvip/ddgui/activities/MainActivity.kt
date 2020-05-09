@@ -161,12 +161,12 @@ class MainActivity : AppCompatActivity() {
     private fun checkInputFields(): Boolean {
         return when {
             inputPath.text.toString().isEmpty() -> {
-                Snackbar.make(inputPath, R.string.error_missing_input, Snackbar.LENGTH_LONG).show()
+                Snackbar.make(inputPath, R.string.error_missing_input, Snackbar.LENGTH_LONG).showThemed()
                 false
             }
 
             outputPath.text.toString().isEmpty() -> {
-                Snackbar.make(outputPath, R.string.error_missing_output, Snackbar.LENGTH_LONG).show()
+                Snackbar.make(outputPath, R.string.error_missing_output, Snackbar.LENGTH_LONG).showThemed()
                 false
             }
 
