@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".activities.DisclaimerActivity">
 
@@ -25,7 +26,7 @@
                 android:src="@drawable/ic_error"
                 android:layout_gravity="center_horizontal"/>
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 style="@style/TextAppearance.MaterialComponents.Headline4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,7 +35,7 @@
                 android:textColor="?attr/colorOnSurface"
                 android:text="@string/disclaimer"/>
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 style="@style/TextAppearance.MaterialComponents.Headline6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -42,26 +43,50 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/disclaimer_headline"/>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="monospace"
-                android:text="@string/disclaimer1"
-                android:layout_marginTop="24dp"/>
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="monospace"
-                android:text="@string/disclaimer2"/>
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:background="#cfd8dc"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginTop="24dp"/>
 
-            <CheckBox
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:fontFamily="monospace"
+                        android:text="@string/disclaimer1"
+                        android:layout_marginTop="24dp"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:fontFamily="monospace"
+                        android:text="@string/disclaimer2"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatCheckBox
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/disclaimerAccept"
                 android:text="@string/disclaimer_accept"
                 android:layout_marginTop="24dp"
+                app:fontFamily="monospace"
                 android:padding="8dp"/>
 
         </LinearLayout>
@@ -82,6 +107,7 @@
             android:id="@+id/disclaimerNext"
             android:text="@string/next"
             android:enabled="false"
+            android:fontFamily="monospace"
             android:layout_gravity="bottom|end"/>
 
     </LinearLayout>
