@@ -26,4 +26,8 @@
     <string name="pick">Escolher</string>
     <string name="result">Resultado</string>
     <string name="root_not_found">Acesso root não encontrado ou negado pelo aplicativo de superusuário!</string>
+    <string name="new_folder">Nova pasta</string>
+    <string name="create_folder_fail">Falha ao criar pasta</string>
+    <string name="create_file_fail">Falha ao criar arquivo</string>
+    <string name="new_file">Novo arquivo</string>
 </resources>
