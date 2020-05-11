@@ -9,7 +9,7 @@ android {
         applicationId "com.androidvip.ddgui"
         minSdkVersion 15
         targetSdkVersion 29
-        versionCode 2
+        versionCode 4
         versionName "1.0.0"
         resConfigs "en", "de", "pt-rBR"
     }
