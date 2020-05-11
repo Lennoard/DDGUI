@@ -1,7 +1,7 @@
 ## DDGUI
 A graphical interface for the good old dd command in a **rooted** Android environment
 
-DD GUI is a free and open source software (FOS) whose objective is to facilitate the execution of dd commands by providing a graphical interface. Read more about dd here.
+DD GUI is a free and open source software (FOSS) whose objective is to facilitate the execution of dd commands by providing a graphical interface. Read more about dd here.
 
 To quickly summarize what can be done with this command, here is a list:
 - Backup current system/kernel/recovery/[...] image to anywhere
