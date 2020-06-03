@@ -30,4 +30,5 @@
     <string name="create_folder_fail">Falha ao criar pasta</string>
     <string name="create_file_fail">Falha ao criar arquivo</string>
     <string name="new_file">Novo arquivo</string>
+    <string name="ppending_operations_warning">Há operações pendentes. Deseja realmente sair agora?</string>
 </resources>

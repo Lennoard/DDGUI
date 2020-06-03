@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             STATE_EXECUTING -> {
                 AlertDialog.Builder(this)
                     .setTitle(android.R.string.dialog_alert_title)
-                    .setMessage("There are operations pending, do you really want to quit now?")
+                    .setMessage(R.string.ppending_operations_warning)
                     .setPositiveButton(android.R.string.yes) { _, _ ->
                         super.onBackPressed()
                     }

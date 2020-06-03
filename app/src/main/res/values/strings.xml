@@ -30,4 +30,5 @@
     <string name="create_folder_fail">Failed to create folder</string>
     <string name="create_file_fail">Failed to create file</string>
     <string name="new_file">New file</string>
+    <string name="ppending_operations_warning">There are operations pending, do you really want to quit now?</string>
 </resources>
