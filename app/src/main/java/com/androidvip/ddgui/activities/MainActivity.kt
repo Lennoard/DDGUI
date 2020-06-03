@@ -76,6 +76,13 @@ class MainActivity : AppCompatActivity() {
                 resultProgress.hide()
                 resultHeadline.text = getString(R.string.executing)
 
+                arrayOf(
+                    conversionNoTruncate,
+                    conversionNoError,
+                    conversionSync,
+                    conversionFsync
+                ).forEach { it.isChecked = false }
+
                 currentState = STATE_IDLE
             }
 
@@ -129,41 +136,64 @@ class MainActivity : AppCompatActivity() {
 
         fab.setOnClickListener {
             if (checkInputFields()) {
-                currentState = STATE_EXECUTING
-
-                val `if` = inputPath.text.toString().trim()
-                val of = outputPath.text.toString().trim()
-
-                resultLayout.show()
-                optionsLayout.goAway()
-                fab.hide()
-                resultProgress.show()
-                resultHeadline.text = getString(R.string.executing)
-
-                val callbackList: List<String> = object : CallbackList<String>() {
-                    @MainThread
-                    override fun onAddElement(s: String) {
-                        resultOutput.text = "${resultOutput.text}\n$s"
-                    }
-                }
-
-                Shell.su("dd if=$`if` of=$of").to(callbackList).submit {
-                    resultHeadline.text = getString(R.string.finished)
-                    resultProgress.goAway()
-
-                    currentState = STATE_EXECUTED
-                }
-
-                /* TODO: this sadly needs to be executed in its own shell
-                    otherwise it'll be pushed to the current shell's
-                    internal queue, not executing until the previous
-                    jobs finish instead of running concurrently with them
-                 */
-                Shell.su("watch -n1 'kill -USR1 \$(pgrep ^dd)'").submit()
+                executeDd()
             }
         }
     }
+    
+    private fun getConversions() : String {
+        return arrayOf(
+            conversionNoTruncate,
+            conversionNoError,
+            conversionSync,
+            conversionFsync
+        ).filter {
+            it.isChecked
+        }.joinToString(",") {
+            it.tag as String
+        }
+    }
+    
+    private fun executeDd() {
+        currentState = STATE_EXECUTING
 
+        val `if` = inputPath.text.toString().trim()
+        val of = outputPath.text.toString().trim()
+        val conv = getConversions()
+
+        resultLayout.show()
+        optionsLayout.goAway()
+        fab.hide()
+        resultProgress.show()
+        resultHeadline.text = getString(R.string.executing)
+
+        val callbackList: List<String> = object : CallbackList<String>() {
+            @MainThread
+            override fun onAddElement(s: String) {
+                resultOutput.text = "${resultOutput.text}\n$s"
+            }
+        }
+
+        Shell.su("dd if=$`if` of=$of conv=$conv").to(callbackList).submit {
+            resultHeadline.text = getString(R.string.finished)
+            resultProgress.goAway()
+
+            currentState = STATE_EXECUTED
+        }
+
+        /* TODO:
+            This sadly needs to be executed in its own shell
+            otherwise it'll be pushed to the current shell's
+            internal queue, not executing until the previous
+            jobs finish instead of running concurrently with them.
+         */
+        /*
+            In case you're wondering, sending this signal to a dd
+            process causes it to print its progress
+            Shell.su("watch -n1 'kill -USR1 \$(pgrep ^dd)'").submit()
+         */
+    }
+    
     private fun checkInputFields(): Boolean {
         return when {
             inputPath.text.toString().isEmpty() -> {

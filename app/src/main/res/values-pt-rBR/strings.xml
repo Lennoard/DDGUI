@@ -31,4 +31,8 @@
     <string name="create_file_fail">Falha ao criar arquivo</string>
     <string name="new_file">Novo arquivo</string>
     <string name="ppending_operations_warning">Há operações pendentes. Deseja realmente sair agora?</string>
+    <string name="conversion_no_truncate">Não truncar o arquivo de saída</string>
+    <string name="conversion_no_error">Continuar depois de erros de leitura</string>
+    <string name="conversion_sync">Preencher blocos com zeros</string>
+    <string name="conversionFsync">Gravar fisicamente os dados antes de finalizar</string>
 </resources>

@@ -205,21 +205,20 @@
 
             </androidx.cardview.widget.CardView>
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="?attr/colorAccent"
+                app:fontFamily="monospace"
                 android:layout_marginTop="16dp"
-                android:text="@string/advanced"
-                android:visibility="gone"/>
+                android:text="@string/advanced"/>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
                 android:layout_marginRight="4dp"
-                android:layout_marginTop="8dp"
-                android:visibility="gone">
+                android:layout_marginTop="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -228,35 +227,39 @@
                     android:padding="16dp">
 
                     <TextView
-                        style="@style/TextAppearance.MaterialComponents.Headline5"
+                        style="@style/CardHeading"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
                         android:layout_marginBottom="8dp"
                         android:text="@string/conversions" />
 
                     <CheckBox
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Do not truncate output file"
+                        android:id="@+id/conversionNoTruncate"
+                        android:text="@string/conversion_no_truncate"
                         android:tag="notrunc"/>
 
                     <CheckBox
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Continue after read errors"
+                        android:id="@+id/conversionNoError"
+                        android:text="@string/conversion_no_error"
                         android:tag="noerror"/>
 
                     <CheckBox
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Pad blocks with zeros"
+                        android:id="@+id/conversionSync"
+                        android:text="@string/conversion_sync"
                         android:tag="sync"/>
 
                     <CheckBox
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Physically write data out before finishing"
+                        android:id="@+id/conversionFsync"
+                        android:text="@string/conversionFsync"
                         android:tag="fsync"/>
 
                 </LinearLayout>

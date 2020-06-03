@@ -31,4 +31,8 @@
     <string name="create_file_fail">Failed to create file</string>
     <string name="new_file">New file</string>
     <string name="ppending_operations_warning">There are operations pending, do you really want to quit now?</string>
+    <string name="conversion_no_truncate">Do not truncate output file</string>
+    <string name="conversion_no_error">Continue after read errors</string>
+    <string name="conversion_sync">Pad blocks with zeros</string>
+    <string name="conversionFsync">Physically write data out before finishing</string>
 </resources>
