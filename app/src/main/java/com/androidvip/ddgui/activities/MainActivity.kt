@@ -9,6 +9,7 @@ import androidx.annotation.IntDef
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.androidvip.ddgui.*
 import com.androidvip.ddgui.helpers.PickFileDialog
@@ -99,10 +100,9 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings -> true
             R.id.action_disclaimer -> {
-                prefs.edit().putBoolean("disclaimer_pass", false).apply().also {
-                    startActivity(Intent(this, DisclaimerActivity::class.java))
-                    finish()
-                }
+                prefs.edit { putBoolean("disclaimer_pass", false) }
+                startActivity(Intent(this, DisclaimerActivity::class.java))
+                finish()
                 true
             }
             R.id.action_exit -> {
@@ -153,6 +153,12 @@ class MainActivity : AppCompatActivity() {
 
                     currentState = STATE_EXECUTED
                 }
+
+                /* TODO: this sadly needs to be executed in its own shell
+                    otherwise it'll be pushed to the current shell's
+                    internal queue, not executing until the previous
+                    jobs finish instead of running concurrently with them
+                 */
                 Shell.su("watch -n1 'kill -USR1 \$(pgrep ^dd)'").submit()
             }
         }
@@ -161,12 +167,12 @@ class MainActivity : AppCompatActivity() {
     private fun checkInputFields(): Boolean {
         return when {
             inputPath.text.toString().isEmpty() -> {
-                Snackbar.make(inputPath, R.string.error_missing_input, Snackbar.LENGTH_LONG).showThemed()
+                inputPath.snackbar(R.string.error_missing_input, Snackbar.LENGTH_LONG)
                 false
             }
 
             outputPath.text.toString().isEmpty() -> {
-                Snackbar.make(outputPath, R.string.error_missing_output, Snackbar.LENGTH_LONG).showThemed()
+                outputPath.snackbar(R.string.error_missing_output, Snackbar.LENGTH_LONG)
                 false
             }
 
