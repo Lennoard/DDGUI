@@ -35,4 +35,5 @@
     <string name="conversion_no_error">Continue after read errors</string>
     <string name="conversion_sync">Pad blocks with zeros</string>
     <string name="conversionFsync">Physically write data out before finishing</string>
+    <string name="conversionSwab">Swap every pair of input bytes</string>
 </resources>

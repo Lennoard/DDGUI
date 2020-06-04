@@ -80,7 +80,8 @@ class MainActivity : AppCompatActivity() {
                     conversionNoTruncate,
                     conversionNoError,
                     conversionSync,
-                    conversionFsync
+                    conversionFsync,
+                    conversionSwab
                 ).forEach { it.isChecked = false }
 
                 currentState = STATE_IDLE
@@ -146,7 +147,8 @@ class MainActivity : AppCompatActivity() {
             conversionNoTruncate,
             conversionNoError,
             conversionSync,
-            conversionFsync
+            conversionFsync,
+            conversionSwab
         ).filter {
             it.isChecked
         }.joinToString(",") {

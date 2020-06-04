@@ -35,4 +35,5 @@
     <string name="conversion_no_error">Continuar depois de erros de leitura</string>
     <string name="conversion_sync">Preencher blocos com zeros</string>
     <string name="conversionFsync">Gravar fisicamente os dados antes de finalizar</string>
+    <string name="conversionSwab">Trocar todo par de bytes de entrada</string>
 </resources>
