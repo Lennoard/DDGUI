@@ -1,4 +1,16 @@
-## DDGUI
+<p align="center">
+  <img height="360" src="https://i.imgur.com/6X3DnAw.jpg"/>
+  <img height="360" src="https://i.imgur.com/Qc4wRol.jpg"/>
+  <img height="360" src="https://i.imgur.com/tDZwrrx.jpg"/>
+</p>
+
+# DDGUI
+
+![](https://img.shields.io/github/languages/top/Lennoard/DDGUI)
+![](https://img.shields.io/github/license/Lennoard/DDGUI)
+![](https://img.shields.io/github/downloads/Lennoard/DDGUI/total)
+![](https://img.shields.io/github/contributors/Lennoard/DDGUI)
+
 A graphical interface for the good old dd command in a **rooted** Android environment
 
 DD GUI is a free and open source software (FOSS) whose objective is to facilitate the execution of dd commands by providing a graphical interface. Read more about dd here.
@@ -11,6 +23,10 @@ To quickly summarize what can be done with this command, here is a list:
 ## Disclaimer
 >THIS APPLICATION CAN BE DANGEROUS. Under any circumstances, anyone who contributed to the development this application shall have no liability for any damages or losses caused by it.
 DD GUI is free and open source software made in hope that it will be useful to someone. By choosing to use this application, you and only you will be responsible for what you do with it.
+
+### Download
+<a href='https://apt.izzysoft.de/fdroid/index/apk/com.androidvip.ddgui'><img alt='Get it on IzzyOnDroid' height="64" src='https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png'/></a>
+<a href='https://labs.xda-developers.com/store/app/com.androidvip.ddgui'><img alt='Get it on Labs' height="64" src='https://i.imgur.com/Pz29bXH.png'/></a>
 
 ### License
 This project is licensed under the terms of the MIT license.
