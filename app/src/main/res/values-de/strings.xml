@@ -25,4 +25,15 @@
     <string name="result">Resultat</string>
     <string name="executing">In Bearbeitung…</string>
     <string name="finished">Abgeschlossen</string>
+    <string name="options">Optionen</string>
+    <string name="new_folder">Neuer Ordner</string>
+    <string name="create_folder_fail">Ordner konnte nicht erstellt werden</string>
+    <string name="create_file_fail">Datei konnte nicht erstellt werden</string>
+    <string name="new_file">Neue Datei</string>
+    <string name="ppending_operations_warning">Es sind noch Vorgänge ausstehend. Möchten Sie wirklich beenden?</string>
+    <string name="conversion_no_truncate">Ausgabedatei nicht kürzen</string>
+    <string name="conversion_no_error">Nach Lesefehlern fortfahren</string>
+    <string name="conversion_sync">Blöcke mit Nullen auffüllen</string>
+    <string name="conversionFsync">Daten vor Abschluss physisch schreiben</string>
+    <string name="conversionSwab">Jedes Paar Eingabebytes vertauschen</string>
 </resources>

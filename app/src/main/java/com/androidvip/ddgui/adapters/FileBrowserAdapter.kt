@@ -17,7 +17,7 @@ import com.topjohnwu.superuser.io.SuFile
 import java.io.File
 
 class FileBrowserAdapter(
-    allFiles: Array<File>,
+    allFiles: Array<out File>,
     private val context: Context,
     private val onFileSelectedListener: OnFileSelectedListener?
 ) : RecyclerView.Adapter<FileBrowserAdapter.ViewHolder>() {
@@ -65,12 +65,12 @@ class FileBrowserAdapter(
         return dataSet.size
     }
 
-    fun updateData(newData: Array<File>) {
+    fun updateData(newData: Array<out File>) {
         filterAndSortByName(newData)
         notifyDataSetChanged()
     }
 
-    private fun filterAndSortByName(files: Array<File>) {
+    private fun filterAndSortByName(files: Array<out File>) {
         dataSet.clear()
         files.forEach {
             dataSet.addIf(it.exists() || it.isDirectory, it)

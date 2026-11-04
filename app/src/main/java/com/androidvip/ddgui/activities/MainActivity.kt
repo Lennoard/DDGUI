@@ -2,9 +2,13 @@ package com.androidvip.ddgui.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.IntDef
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
@@ -12,91 +16,91 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.androidvip.ddgui.*
+import com.androidvip.ddgui.databinding.ActivityMainBinding
+import com.androidvip.ddgui.dd.DdCommandBuilder
+import com.androidvip.ddgui.dd.DdConversion
+import com.androidvip.ddgui.dd.DdRequest
 import com.androidvip.ddgui.helpers.PickFileDialog
 import com.google.android.material.snackbar.Snackbar
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     @State private var currentState: Int = STATE_IDLE
+    private lateinit var binding: ActivityMainBinding
+    private val content get() = binding.contentMain
     private val prefs: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge(SystemBarStyle.dark(Color.TRANSPARENT))
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
-        Shell.Config.setFlags(Shell.FLAG_REDIRECT_STDERR)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                when (currentState) {
+                    STATE_EXECUTING -> {
+                        AlertDialog.Builder(this@MainActivity)
+                            .setTitle(android.R.string.dialog_alert_title)
+                            .setMessage(R.string.ppending_operations_warning)
+                            .setPositiveButton(android.R.string.yes) { _, _ -> finish() }
+                            .setNegativeButton(android.R.string.no, null)
+                            .show()
+                    }
 
-        GlobalScope.launch {
-            val isRooted = Shell.rootAccess()
-            val activity = this@MainActivity
-
-            runSafeOnUiThread {
-                if (isRooted) {
-                    setUpClickListeners()
-                } else {
-                    AlertDialog.Builder(activity)
-                        .setIcon(R.drawable.ic_error)
-                        .setTitle(android.R.string.dialog_alert_title)
-                        .setMessage(R.string.root_not_found)
-                        .setCancelable(false)
-                        .setPositiveButton(android.R.string.ok) { _, _ ->
-                            moveTaskToBack(true)
-                            finish()
+                    STATE_EXECUTED -> resetExecutedState()
+                    else -> {
+                        isEnabled = false
+                        try {
+                            onBackPressedDispatcher.onBackPressed()
+                        } finally {
+                            isEnabled = true
                         }
+                    }
                 }
             }
-        }
-    }
+        })
 
-    override fun onBackPressed() {
-        when (currentState) {
-            STATE_EXECUTING -> {
+        Shell.getShell { shell ->
+            if (isFinishing || isDestroyed) return@getShell
+
+            if (shell.isRoot) {
+                setUpClickListeners()
+            } else {
                 AlertDialog.Builder(this)
+                    .setIcon(R.drawable.ic_error)
                     .setTitle(android.R.string.dialog_alert_title)
-                    .setMessage(R.string.ppending_operations_warning)
-                    .setPositiveButton(android.R.string.yes) { _, _ ->
-                        super.onBackPressed()
+                    .setMessage(R.string.root_not_found)
+                    .setCancelable(false)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        moveTaskToBack(true)
+                        finish()
                     }
-                    .setNegativeButton(android.R.string.no) { _, _ ->  }
                     .show()
             }
-
-            STATE_EXECUTED -> {
-                resultLayout.goAway()
-                optionsLayout.show()
-                fab.show()
-                resultProgress.hide()
-                resultHeadline.text = getString(R.string.executing)
-
-                arrayOf(
-                    conversionNoTruncate,
-                    conversionNoError,
-                    conversionSync,
-                    conversionFsync,
-                    conversionSwab
-                ).forEach { it.isChecked = false }
-
-                currentState = STATE_IDLE
-            }
-
-            else -> super.onBackPressed()
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    private fun resetExecutedState() {
+        content.resultLayout.goAway()
+        content.optionsLayout.show()
+        binding.fab.show()
+        content.resultProgress.hide()
+        content.resultHeadline.text = getString(R.string.executing)
 
-        runCatching {
-            Shell.getCachedShell()?.close()
-        }
+        arrayOf(
+            content.conversionNoTruncate,
+            content.conversionNoError,
+            content.conversionSync,
+            content.conversionFsync,
+            content.conversionSwab
+        ).forEach { it.isChecked = false }
+
+        currentState = STATE_IDLE
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -123,62 +127,66 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpClickListeners() {
-        inputPick.setOnClickListener {
+        content.inputPick.setOnClickListener {
             PickFileDialog(this) {
-                inputPath.setText(it.absolutePath)
+                content.inputPath.setText(it.absolutePath)
             }
         }
 
-        outputPick.setOnClickListener {
+        content.outputPick.setOnClickListener {
             PickFileDialog(this) {
-                outputPath.setText(it.absolutePath)
+                content.outputPath.setText(it.absolutePath)
             }
         }
 
-        fab.setOnClickListener {
+        binding.fab.setOnClickListener {
             if (checkInputFields()) {
                 executeDd()
             }
         }
     }
     
-    private fun getConversions() : String {
-        return arrayOf(
-            conversionNoTruncate,
-            conversionNoError,
-            conversionSync,
-            conversionFsync,
-            conversionSwab
-        ).filter {
-            it.isChecked
-        }.joinToString(",") {
-            it.tag as String
+    private fun getConversions(): List<DdConversion> {
+        return listOf(
+            content.conversionNoTruncate to DdConversion.NO_TRUNCATE,
+            content.conversionNoError to DdConversion.NO_ERROR,
+            content.conversionSync to DdConversion.SYNC,
+            content.conversionFsync to DdConversion.FSYNC,
+            content.conversionSwab to DdConversion.SWAB
+        ).filter { (view, _) ->
+            view.isChecked
+        }.map { (_, conversion) ->
+            conversion
         }
     }
     
     private fun executeDd() {
         currentState = STATE_EXECUTING
 
-        val `if` = inputPath.text.toString().trim()
-        val of = outputPath.text.toString().trim()
-        val conv = getConversions()
+        val inputPath = content.inputPath.text.toString()
+        val outputPath = content.outputPath.text.toString()
+        val command = DdCommandBuilder.build(
+            DdRequest(inputPath, outputPath, getConversions())
+        )
 
-        resultLayout.show()
-        optionsLayout.goAway()
-        fab.hide()
-        resultProgress.show()
-        resultHeadline.text = getString(R.string.executing)
+        content.resultLayout.show()
+        content.optionsLayout.goAway()
+        binding.fab.hide()
+        content.resultProgress.show()
+        content.resultHeadline.text = getString(R.string.executing)
 
         val callbackList: List<String> = object : CallbackList<String>() {
             @MainThread
             override fun onAddElement(s: String) {
-                resultOutput.text = "${resultOutput.text}\n$s"
+                content.resultOutput.text = "${content.resultOutput.text}\n$s"
             }
         }
 
-        Shell.su("dd if=$`if` of=$of conv=$conv").to(callbackList).submit {
-            resultHeadline.text = getString(R.string.finished)
-            resultProgress.goAway()
+        Shell.cmd(command).to(callbackList, callbackList).submit { result ->
+            content.resultHeadline.text = getString(
+                if (result.isSuccess) R.string.finished else R.string.failed
+            )
+            content.resultProgress.goAway()
 
             currentState = STATE_EXECUTED
         }
@@ -189,22 +197,17 @@ class MainActivity : AppCompatActivity() {
             internal queue, not executing until the previous
             jobs finish instead of running concurrently with them.
          */
-        /*
-            In case you're wondering, sending this signal to a dd
-            process causes it to print its progress
-            Shell.su("watch -n1 'kill -USR1 \$(pgrep ^dd)'").submit()
-         */
     }
     
     private fun checkInputFields(): Boolean {
         return when {
-            inputPath.text.toString().isEmpty() -> {
-                inputPath.snackbar(R.string.error_missing_input, Snackbar.LENGTH_LONG)
+            content.inputPath.text.toString().isEmpty() -> {
+                content.inputPath.snackbar(R.string.error_missing_input, Snackbar.LENGTH_LONG)
                 false
             }
 
-            outputPath.text.toString().isEmpty() -> {
-                outputPath.snackbar(R.string.error_missing_output, Snackbar.LENGTH_LONG)
+            content.outputPath.text.toString().isEmpty() -> {
+                content.outputPath.snackbar(R.string.error_missing_output, Snackbar.LENGTH_LONG)
                 false
             }
 

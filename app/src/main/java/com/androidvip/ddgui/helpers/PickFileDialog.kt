@@ -151,7 +151,7 @@ class PickFileDialog(activity: Activity, val fileSelectedCallback: (File) -> Uni
         }
     }
 
-    private suspend fun getCurrentPathFiles() : Array<File>? = withContext(Dispatchers.IO) {
+    private suspend fun getCurrentPathFiles() : Array<out File>? = withContext(Dispatchers.IO) {
         runCatching {
             SuFile.open(currentFile.absolutePath).listFiles()
         }.getOrDefault(arrayOf())
