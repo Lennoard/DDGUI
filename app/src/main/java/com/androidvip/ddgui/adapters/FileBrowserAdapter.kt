@@ -11,17 +11,15 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.androidvip.ddgui.R
-import com.androidvip.ddgui.addIf
+import com.androidvip.ddgui.domain.files.RootFileEntry
 import com.androidvip.ddgui.helpers.OnFileSelectedListener
-import com.topjohnwu.superuser.io.SuFile
-import java.io.File
 
 class FileBrowserAdapter(
-    allFiles: Array<out File>,
+    allFiles: List<RootFileEntry>,
     private val context: Context,
     private val onFileSelectedListener: OnFileSelectedListener?
 ) : RecyclerView.Adapter<FileBrowserAdapter.ViewHolder>() {
-    private val dataSet = mutableListOf<File>()
+    private val dataSet = mutableListOf<RootFileEntry>()
 
     init {
         filterAndSortByName(allFiles)
@@ -42,13 +40,13 @@ class FileBrowserAdapter(
         val file = dataSet[position]
 
         if (file.isDirectory) {
-            with (holder) {
+            with(holder) {
                 name.setTextColor(Color.WHITE)
                 icon.setImageResource(R.drawable.ic_folder)
                 icon.setColorFilter(Color.parseColor("#FFEA00"), PorterDuff.Mode.SRC_IN)
             }
         } else {
-            with (holder) {
+            with(holder) {
                 name.setTextColor(Color.parseColor("#99FFFFFF"))
                 icon.setImageResource(R.drawable.ic_file)
                 icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
@@ -65,20 +63,18 @@ class FileBrowserAdapter(
         return dataSet.size
     }
 
-    fun updateData(newData: Array<out File>) {
+    fun updateData(newData: List<RootFileEntry>) {
         filterAndSortByName(newData)
         notifyDataSetChanged()
     }
 
-    private fun filterAndSortByName(files: Array<out File>) {
+    private fun filterAndSortByName(files: List<RootFileEntry>) {
         dataSet.clear()
-        files.forEach {
-            dataSet.addIf(it.exists() || it.isDirectory, it)
-        }
-
-        dataSet.sort()
-        dataSet.sortWith(Comparator { f1, f2 ->
-            f2.isDirectory.compareTo(f1.isDirectory)
-        })
+        dataSet.addAll(
+            files.sortedWith(
+                compareByDescending<RootFileEntry> { it.isDirectory }
+                    .thenBy { it.name.lowercase() }
+            )
+        )
     }
 }

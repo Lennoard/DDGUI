@@ -10,22 +10,27 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.IntDef
-import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.androidvip.ddgui.*
 import com.androidvip.ddgui.databinding.ActivityMainBinding
-import com.androidvip.ddgui.dd.DdCommandBuilder
-import com.androidvip.ddgui.dd.DdConversion
-import com.androidvip.ddgui.dd.DdRequest
+import com.androidvip.ddgui.domain.dd.DdConversion
+import com.androidvip.ddgui.domain.dd.DdExecutionResult
+import com.androidvip.ddgui.domain.dd.DdRepository
+import com.androidvip.ddgui.domain.dd.DdRequest
+import com.androidvip.ddgui.domain.dd.RootAccess
 import com.androidvip.ddgui.helpers.PickFileDialog
+import com.androidvip.ddgui.domain.files.RootFileRepository
 import com.google.android.material.snackbar.Snackbar
-import com.topjohnwu.superuser.CallbackList
-import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
+    private val ddRepository: DdRepository by inject()
+    private val rootFileRepository: RootFileRepository by inject()
     @State private var currentState: Int = STATE_IDLE
     private lateinit var binding: ActivityMainBinding
     private val content get() = binding.contentMain
@@ -65,13 +70,10 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        Shell.getShell { shell ->
-            if (isFinishing || isDestroyed) return@getShell
-
-            if (shell.isRoot) {
-                setUpClickListeners()
-            } else {
-                AlertDialog.Builder(this)
+        lifecycleScope.launch {
+            when (ddRepository.checkRootAccess()) {
+                RootAccess.Granted -> setUpClickListeners()
+                RootAccess.Denied -> AlertDialog.Builder(this@MainActivity)
                     .setIcon(R.drawable.ic_error)
                     .setTitle(android.R.string.dialog_alert_title)
                     .setMessage(R.string.root_not_found)
@@ -128,14 +130,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpClickListeners() {
         content.inputPick.setOnClickListener {
-            PickFileDialog(this) {
-                content.inputPath.setText(it.absolutePath)
+            PickFileDialog(this, rootFileRepository) {
+                content.inputPath.setText(it)
             }
         }
 
         content.outputPick.setOnClickListener {
-            PickFileDialog(this) {
-                content.outputPath.setText(it.absolutePath)
+            PickFileDialog(this, rootFileRepository) {
+                content.outputPath.setText(it)
             }
         }
 
@@ -163,40 +165,46 @@ class MainActivity : AppCompatActivity() {
     private fun executeDd() {
         currentState = STATE_EXECUTING
 
-        val inputPath = content.inputPath.text.toString()
-        val outputPath = content.outputPath.text.toString()
-        val command = DdCommandBuilder.build(
-            DdRequest(inputPath, outputPath, getConversions())
-        )
-
+        val inputPath = content.inputPath.text.toString().trim()
+        val outputPath = content.outputPath.text.toString().trim()
         content.resultLayout.show()
         content.optionsLayout.goAway()
         binding.fab.hide()
         content.resultProgress.show()
         content.resultHeadline.text = getString(R.string.executing)
+        content.resultOutput.text = ""
 
-        val callbackList: List<String> = object : CallbackList<String>() {
-            @MainThread
-            override fun onAddElement(s: String) {
-                content.resultOutput.text = "${content.resultOutput.text}\n$s"
+        lifecycleScope.launch {
+            val result = ddRepository.execute(
+                DdRequest(inputPath, outputPath, getConversions())
+            ) { line ->
+                content.resultOutput.append("\n$line")
+            }
+
+            when (result) {
+                is DdExecutionResult.Completed -> {
+                    content.resultHeadline.text = getString(
+                        if (result.exitCode == 0) R.string.finished else R.string.failed
+                    )
+                    content.resultProgress.goAway()
+                    currentState = STATE_EXECUTED
+                }
+
+                DdExecutionResult.RootDenied -> {
+                    content.resultHeadline.text = getString(R.string.failed)
+                    content.resultOutput.text = getString(R.string.root_not_found)
+                    content.resultProgress.goAway()
+                    currentState = STATE_EXECUTED
+                }
+
+                is DdExecutionResult.InvalidRequest -> {
+                    content.resultHeadline.text = getString(R.string.failed)
+                    content.resultOutput.text = result.message
+                    content.resultProgress.goAway()
+                    currentState = STATE_EXECUTED
+                }
             }
         }
-
-        Shell.cmd(command).to(callbackList, callbackList).submit { result ->
-            content.resultHeadline.text = getString(
-                if (result.isSuccess) R.string.finished else R.string.failed
-            )
-            content.resultProgress.goAway()
-
-            currentState = STATE_EXECUTED
-        }
-
-        /* TODO:
-            This sadly needs to be executed in its own shell
-            otherwise it'll be pushed to the current shell's
-            internal queue, not executing until the previous
-            jobs finish instead of running concurrently with them.
-         */
     }
     
     private fun checkInputFields(): Boolean {

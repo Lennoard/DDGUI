@@ -1,8 +1,7 @@
 package com.androidvip.ddgui.helpers
 
-import com.topjohnwu.superuser.io.SuFile
-import java.io.File
+import com.androidvip.ddgui.domain.files.RootFileEntry
 
 interface OnFileSelectedListener {
-    fun onFileSelected(newFile: File)
+    fun onFileSelected(newFile: RootFileEntry)
 }

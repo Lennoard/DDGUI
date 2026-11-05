@@ -50,17 +50,19 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':domain')
+    implementation project(':data')
     implementation libs.coroutines.android
     implementation libs.androidx.appcompat
     implementation libs.androidx.cardview
     implementation libs.androidx.core.ktx
+    implementation libs.androidx.lifecycle.runtime.ktx
     implementation libs.androidx.constraintlayout
     implementation libs.androidx.preference
     implementation libs.androidx.recyclerview
     implementation libs.androidx.swiperefreshlayout
-    implementation libs.libsu.core
-    implementation libs.libsu.io
     implementation libs.material
+    implementation libs.koin.android
 
     testImplementation libs.junit
 }

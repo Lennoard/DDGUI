@@ -14,22 +14,27 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.androidvip.ddgui.R
 import com.androidvip.ddgui.adapters.FileBrowserAdapter
+import com.androidvip.ddgui.domain.files.DirectoryListingResult
+import com.androidvip.ddgui.domain.files.FileCreationResult
+import com.androidvip.ddgui.domain.files.RootFileEntry
+import com.androidvip.ddgui.domain.files.RootFileRepository
 import com.androidvip.ddgui.runSafeOnUiThread
 import com.androidvip.ddgui.toast
-import com.topjohnwu.superuser.io.SuFile
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
 
-class PickFileDialog(activity: Activity, val fileSelectedCallback: (File) -> Unit) : OnFileSelectedListener {
-    private var fileBrowserAdapter: FileBrowserAdapter = FileBrowserAdapter(arrayOf(), activity, this)
+class PickFileDialog(
+    activity: Activity,
+    private val fileRepository: RootFileRepository,
+    val fileSelectedCallback: (String) -> Unit
+) : OnFileSelectedListener {
+    private var fileBrowserAdapter: FileBrowserAdapter = FileBrowserAdapter(emptyList(), activity, this)
     private var dialog: Dialog
     private val weakActivity : WeakReference<Activity> = WeakReference(activity)
-    var currentFile = File("/")
-    var forwardFile: File? = null
+    var currentPath = "/"
+    var forwardPath: String? = null
 
     init {
         dialog = Dialog(weakActivity.get()!!).apply {
@@ -38,16 +43,16 @@ class PickFileDialog(activity: Activity, val fileSelectedCallback: (File) -> Uni
             setCancelable(true)
 
             this.findViewById<ImageView>(R.id.pickFilesRootFolder).setOnClickListener {
-                currentFile = SuFile.open("/")
-                forwardFile = null
+                currentPath = "/"
+                forwardPath = null
                 refreshList()
                 this.findViewById<ImageView>(R.id.pickFilesForward)
                     ?.setColorFilter(Color.argb(128, 0, 0, 0))
             }
 
             this.findViewById<ImageView>(R.id.pickFilesHomeFolder).setOnClickListener {
-                currentFile = SuFile.open(Environment.getExternalStorageDirectory().toString())
-                forwardFile = null
+                currentPath = Environment.getExternalStorageDirectory().toString()
+                forwardPath = null
                 refreshList()
                 this.findViewById<ImageView>(R.id.pickFilesForward)
                     ?.setColorFilter(Color.argb(128, 0, 0, 0))
@@ -55,8 +60,8 @@ class PickFileDialog(activity: Activity, val fileSelectedCallback: (File) -> Uni
 
             this.findViewById<ImageView>(R.id.pickFilesLevelUp).setOnClickListener {
                 runCatching {
-                    forwardFile = currentFile
-                    currentFile = currentFile.parentFile ?: currentFile
+                    forwardPath = currentPath
+                    currentPath = File(currentPath).parent ?: currentPath
                     refreshList()
 
                     this.findViewById<ImageView>(R.id.pickFilesForward)
@@ -66,9 +71,9 @@ class PickFileDialog(activity: Activity, val fileSelectedCallback: (File) -> Uni
 
             this.findViewById<ImageView>(R.id.pickFilesForward).setOnClickListener {
                 runCatching {
-                    if (forwardFile != null) {
-                        currentFile = forwardFile!!
-                        forwardFile = null
+                    if (forwardPath != null) {
+                        currentPath = forwardPath!!
+                        forwardPath = null
                         refreshList()
                         this.findViewById<ImageView>(R.id.pickFilesForward)
                             ?.setColorFilter(Color.argb(128, 0, 0, 0))
@@ -107,23 +112,32 @@ class PickFileDialog(activity: Activity, val fileSelectedCallback: (File) -> Uni
         swipeLayout?.isRefreshing = true
 
         GlobalScope.launch {
-            val files = getCurrentPathFiles()
+            val result = fileRepository.list(currentPath)
 
             weakActivity.get().runSafeOnUiThread {
                 swipeLayout?.isRefreshing = false
-                files?.let {
-                    dialog.findViewById<TextView>(R.id.pickFilesCurrentPath)?.text = currentFile.absolutePath
-                    fileBrowserAdapter.updateData(it)
+                when (result) {
+                    is DirectoryListingResult.Success -> {
+                        dialog.findViewById<TextView>(R.id.pickFilesCurrentPath)?.text = currentPath
+                        fileBrowserAdapter.updateData(result.entries)
+                    }
+                    is DirectoryListingResult.Failure -> {
+                        weakActivity.get()?.toast(R.string.failed)
+                    }
                 }
 
                 dialog.findViewById<ImageView>(R.id.pickFilesNewFolder).setOnClickListener {
                     EditDialog(weakActivity.get()!!) {
-                        val newDir = SuFile("${currentFile.absolutePath}/$it")
-                        if (newDir.mkdir()) {
-                            currentFile = newDir
-                            refreshList()
-                        } else {
-                            weakActivity.get()!!.toast(weakActivity.get()!!.getString(R.string.create_folder_fail))
+                        GlobalScope.launch {
+                            when (fileRepository.createDirectory(currentPath, it)) {
+                                is FileCreationResult.Created -> {
+                                    currentPath = File(currentPath, it).path
+                                    refreshList()
+                                }
+                                is FileCreationResult.Failure -> {
+                                    weakActivity.get()?.toast(R.string.create_folder_fail)
+                                }
+                            }
                         }
 
                     }.buildApplying {
@@ -134,12 +148,16 @@ class PickFileDialog(activity: Activity, val fileSelectedCallback: (File) -> Uni
 
                 dialog.findViewById<ImageView>(R.id.pickFilesNewFile).setOnClickListener {
                     EditDialog(weakActivity.get()!!) {
-                        val createdFile = SuFile("${currentFile.absolutePath}/$it")
-                        if (createdFile.createNewFile()) {
-                            fileSelectedCallback(createdFile)
-                            dialog.dismiss()
-                        } else {
-                            weakActivity.get()!!.toast(weakActivity.get()!!.getString(R.string.create_file_fail))
+                        GlobalScope.launch {
+                            when (val result = fileRepository.createFile(currentPath, it)) {
+                                is FileCreationResult.Created -> {
+                                    fileSelectedCallback(result.entry.path)
+                                    dialog.dismiss()
+                                }
+                                is FileCreationResult.Failure -> {
+                                    weakActivity.get()?.toast(R.string.create_file_fail)
+                                }
+                            }
                         }
 
                     }.buildApplying {
@@ -151,21 +169,15 @@ class PickFileDialog(activity: Activity, val fileSelectedCallback: (File) -> Uni
         }
     }
 
-    private suspend fun getCurrentPathFiles() : Array<out File>? = withContext(Dispatchers.IO) {
-        runCatching {
-            SuFile.open(currentFile.absolutePath).listFiles()
-        }.getOrDefault(arrayOf())
-    }
-
-    override fun onFileSelected(newFile: File) {
-        if (!newFile.isDirectory && (newFile.isFile || newFile.exists())) {
-            fileSelectedCallback(newFile)
+    override fun onFileSelected(newFile: RootFileEntry) {
+        if (!newFile.isDirectory && newFile.isFile) {
+            fileSelectedCallback(newFile.path)
             dialog.dismiss()
         } else {
-            currentFile = newFile
+            currentPath = newFile.path
             refreshList()
 
-            if (forwardFile != null) {
+            if (forwardPath != null) {
                 dialog.findViewById<ImageView>(R.id.pickFilesForward)
                     ?.setColorFilter(Color.argb(255, 255, 255, 255))
             } else {

@@ -1,18 +1,6 @@
-package com.androidvip.ddgui.dd
+package com.androidvip.ddgui.data.dd
 
-internal enum class DdConversion(val argument: String) {
-    NO_TRUNCATE("notrunc"),
-    NO_ERROR("noerror"),
-    SYNC("sync"),
-    FSYNC("fsync"),
-    SWAB("swab")
-}
-
-internal data class DdRequest(
-    val inputPath: String,
-    val outputPath: String,
-    val conversions: List<DdConversion>
-)
+import com.androidvip.ddgui.domain.dd.DdRequest
 
 internal object DdCommandBuilder {
     fun build(request: DdRequest): String {
