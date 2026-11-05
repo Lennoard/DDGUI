@@ -1,45 +1,41 @@
 package com.androidvip.ddgui.activities
 
 import android.content.Intent
-import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Bundle
-import androidx.activity.SystemBarStyle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import com.androidvip.ddgui.databinding.ActivityDisclaimerBinding
+import com.androidvip.ddgui.presentation.disclaimer.DisclaimerRoute
+import com.androidvip.ddgui.presentation.disclaimer.DisclaimerViewModel
+import com.androidvip.ddgui.presentation.theme.DDGuiTheme
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class DisclaimerActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityDisclaimerBinding
-    private val prefs: SharedPreferences by lazy {
-        PreferenceManager.getDefaultSharedPreferences(this)
-    }
+class DisclaimerActivity : ComponentActivity() {
+    private val disclaimerViewModel: DisclaimerViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge(SystemBarStyle.dark(Color.TRANSPARENT))
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        binding = ActivityDisclaimerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
-        if (prefs.getBoolean("disclaimer_pass", false)) {
+        if (PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(DisclaimerViewModel.DISCLAIMER_PASSED_KEY, false)
+        ) {
             startMainActivity()
+            return
         }
 
-        binding.disclaimerAccept.setOnCheckedChangeListener { _, isChecked ->
-            binding.disclaimerNext.isEnabled = isChecked
-        }
-
-        binding.disclaimerNext.setOnClickListener {
-            startMainActivity()
+        setContent {
+            DDGuiTheme {
+                DisclaimerRoute(
+                    viewModel = disclaimerViewModel,
+                    onContinue = ::startMainActivity
+                )
+            }
         }
     }
 
     private fun startMainActivity() {
-        prefs.edit {
-            putBoolean("disclaimer_pass", true)
-        }
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }

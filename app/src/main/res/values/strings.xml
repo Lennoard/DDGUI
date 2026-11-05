@@ -7,10 +7,7 @@
     <string name="options">Options</string>
     <string name="pick">Pick</string>
     <string name="basic">Basic</string>
-    <string name="advanced">Advanced</string>
     <string name="conversions">Conversions</string>
-    <string name="in_flags">In flags</string>
-    <string name="out_flags">Out flags</string>
     <string name="exit">Exit</string>
     <string name="next">Next</string>
     <string name="disclaimer">Disclaimer</string>
@@ -23,7 +20,6 @@
     <string name="root_not_found">Root access not found or denied by superuser app!</string>
     <string name="error_missing_input">Please select an input file</string>
     <string name="error_missing_output">Please select an output file</string>
-    <string name="result">Result</string>
     <string name="executing">Executing…</string>
     <string name="finished">Finished</string>
     <string name="new_folder">New folder</string>
@@ -36,4 +32,19 @@
     <string name="conversion_sync">Pad blocks with zeros</string>
     <string name="conversionFsync">Physically write data out before finishing</string>
     <string name="conversionSwab">Swap every pair of input bytes</string>
+    <string name="execute">Execute dd operation</string>
+    <string name="new_operation">New operation</string>
+    <string name="checking_root">Checking root access…</string>
+    <string name="unexpected_error">An unexpected error occurred.</string>
+    <string name="retry">Retry</string>
+    <string name="empty_directory">This directory is empty.</string>
+    <string name="root">Root</string>
+    <string name="home">Home</string>
+    <string name="up">Up</string>
+    <string name="forward">Forward</string>
+    <string name="refresh">Refresh</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="directory_entry">Folder: %1$s</string>
+    <string name="file_entry">File: %1$s</string>
 </resources>

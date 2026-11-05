@@ -2,6 +2,7 @@ package com.androidvip.ddgui
 
 import android.app.Application
 import com.androidvip.ddgui.data.di.dataModule
+import com.androidvip.ddgui.presentation.di.presentationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -10,7 +11,7 @@ class DDGuiApp : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@DDGuiApp)
-            modules(dataModule)
+            modules(dataModule, presentationModule)
         }
     }
 }

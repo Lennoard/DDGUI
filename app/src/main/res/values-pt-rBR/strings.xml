@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="action_settings">Configurações</string>
-    <string name="advanced">Avançado</string>
     <string name="basic">Básico</string>
     <string name="conversions">Conversões</string>
     <string name="create">Criar</string>
@@ -16,15 +15,12 @@
     <string name="exit">Sair</string>
     <string name="failed">Falha</string>
     <string name="finished">Finalizado</string>
-    <string name="in_flags">Flags de entrada</string>
     <string name="next">Próximo</string>
     <string name="options">Opções</string>
     <string name="input">Entrada</string>
-    <string name="out_flags">Flags de saída</string>
     <string name="output">Saída</string>
     <string name="path">caminho</string>
     <string name="pick">Escolher</string>
-    <string name="result">Resultado</string>
     <string name="root_not_found">Acesso root não encontrado ou negado pelo aplicativo de superusuário!</string>
     <string name="new_folder">Nova pasta</string>
     <string name="create_folder_fail">Falha ao criar pasta</string>
@@ -36,4 +32,19 @@
     <string name="conversion_sync">Preencher blocos com zeros</string>
     <string name="conversionFsync">Gravar fisicamente os dados antes de finalizar</string>
     <string name="conversionSwab">Trocar todo par de bytes de entrada</string>
+    <string name="execute">Executar operação dd</string>
+    <string name="new_operation">Nova operação</string>
+    <string name="checking_root">Verificando acesso root…</string>
+    <string name="unexpected_error">Ocorreu um erro inesperado.</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="empty_directory">Esta pasta está vazia.</string>
+    <string name="root">Raiz</string>
+    <string name="home">Início</string>
+    <string name="up">Acima</string>
+    <string name="forward">Avançar</string>
+    <string name="refresh">Atualizar</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+    <string name="directory_entry">Pasta: %1$s</string>
+    <string name="file_entry">Arquivo: %1$s</string>
 </resources>

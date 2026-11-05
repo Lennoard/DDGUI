@@ -6,10 +6,7 @@
     <string name="output">Output</string>
     <string name="pick">Auswählen</string>
     <string name="basic">Basic</string>
-    <string name="advanced">Erweitert</string>
     <string name="conversions">Umwandlungen</string>
-    <string name="in_flags">In flags</string>
-    <string name="out_flags">Out flags</string>
     <string name="exit">Beenden</string>
     <string name="next">Weiter</string>
     <string name="disclaimer">Ausschlussklausel</string>
@@ -22,7 +19,6 @@
     <string name="root_not_found">Root Zugriff verweigert oder durch SuperUser App verweigert!</string>
     <string name="error_missing_input">Bitte eine Eingabedatei auswählen</string>
     <string name="error_missing_output">Bitte eine Ausgabedatei auswählen</string>
-    <string name="result">Resultat</string>
     <string name="executing">In Bearbeitung…</string>
     <string name="finished">Abgeschlossen</string>
     <string name="options">Optionen</string>
@@ -36,4 +32,19 @@
     <string name="conversion_sync">Blöcke mit Nullen auffüllen</string>
     <string name="conversionFsync">Daten vor Abschluss physisch schreiben</string>
     <string name="conversionSwab">Jedes Paar Eingabebytes vertauschen</string>
+    <string name="execute">dd-Vorgang ausführen</string>
+    <string name="new_operation">Neuer Vorgang</string>
+    <string name="checking_root">Root-Zugriff wird geprüft…</string>
+    <string name="unexpected_error">Ein unerwarteter Fehler ist aufgetreten.</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="empty_directory">Dieser Ordner ist leer.</string>
+    <string name="root">Root</string>
+    <string name="home">Start</string>
+    <string name="up">Übergeordnet</string>
+    <string name="forward">Vorwärts</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="directory_entry">Ordner: %1$s</string>
+    <string name="file_entry">Datei: %1$s</string>
 </resources>

@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -18,7 +19,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
+        compose true
     }
 
     buildTypes {
@@ -52,17 +53,26 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':domain')
     implementation project(':data')
+    implementation platform(libs.compose.bom)
+    implementation libs.androidx.activity.compose
     implementation libs.coroutines.android
     implementation libs.androidx.appcompat
-    implementation libs.androidx.cardview
     implementation libs.androidx.core.ktx
     implementation libs.androidx.lifecycle.runtime.ktx
-    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.lifecycle.runtime.compose
+    implementation libs.androidx.lifecycle.viewmodel.ktx
     implementation libs.androidx.preference
-    implementation libs.androidx.recyclerview
-    implementation libs.androidx.swiperefreshlayout
     implementation libs.material
     implementation libs.koin.android
+    implementation libs.compose.ui
+    implementation libs.compose.ui.tooling.preview
+    implementation libs.compose.foundation
+    implementation libs.compose.material3
+    implementation libs.kotlinx.collections.immutable
+
+    debugImplementation libs.compose.ui.tooling
 
     testImplementation libs.junit
+    testImplementation libs.mockk
+    testImplementation libs.coroutines.test
 }
