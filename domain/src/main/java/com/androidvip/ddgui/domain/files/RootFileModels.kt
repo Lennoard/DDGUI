@@ -21,3 +21,8 @@ sealed interface FileCreationResult {
     data class Created(val entry: RootFileEntry) : FileCreationResult
     data class Failure(val reason: FileBrowserFailure) : FileCreationResult
 }
+
+sealed interface FileSizeResult {
+    data class Success(val bytes: Long) : FileSizeResult
+    data object Failure : FileSizeResult
+}

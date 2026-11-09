@@ -5,9 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.androidvip.ddgui.domain.files.DirectoryListingResult
 import com.androidvip.ddgui.domain.files.FileCreationResult
+import com.androidvip.ddgui.domain.files.FileSizeResult
 import com.androidvip.ddgui.domain.files.RootFileRepository
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -16,7 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.File
 
 class FilePickerViewModel(private val fileRepository: RootFileRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(FilePickerUiState())
@@ -28,17 +30,24 @@ class FilePickerViewModel(private val fileRepository: RootFileRepository) : View
     private var isOpen = false
     private var requestId = 0L
     private var listingJob: Job? = null
+    private val fileSizeJobs = mutableMapOf<String, Job>()
 
     fun onEvent(event: FilePickerEvent) {
         when (event) {
             FilePickerEvent.Open -> open()
             FilePickerEvent.Close -> close()
             FilePickerEvent.Refresh -> refresh()
-            FilePickerEvent.NavigateToRoot -> navigate(path = "/", forwardPath = null)
+            FilePickerEvent.NavigateToRoot -> navigate(
+                path = "/",
+                forwardPath = null,
+                directoryHistory = persistentListOf("/")
+            )
             FilePickerEvent.NavigateToHome -> navigateToHome()
             FilePickerEvent.NavigateUp -> navigateUp()
             FilePickerEvent.NavigateForward -> navigateForward()
+            is FilePickerEvent.NavigateToPath -> navigateToPath(event.path)
             is FilePickerEvent.Select -> select(event.entry)
+            is FilePickerEvent.LoadFileSize -> loadFileSize(event.path)
             FilePickerEvent.ShowCreateFile -> showCreateEntry(NewEntryType.File)
             FilePickerEvent.ShowCreateFolder -> showCreateEntry(NewEntryType.Folder)
             is FilePickerEvent.NewEntryNameChanged ->
@@ -53,7 +62,7 @@ class FilePickerViewModel(private val fileRepository: RootFileRepository) : View
     private fun open() {
         isOpen = true
         dismissCreateEntry()
-        navigate(path = "/", forwardPath = null)
+        navigate(path = "/", forwardPath = null, directoryHistory = persistentListOf("/"))
     }
 
     private fun close() {
@@ -61,9 +70,12 @@ class FilePickerViewModel(private val fileRepository: RootFileRepository) : View
         requestId++
         listingJob?.cancel()
         listingJob = null
+        fileSizeJobs.values.forEach(Job::cancel)
+        fileSizeJobs.clear()
         _uiState.update {
             it.copy(
                 isLoading = false,
+                fileSizes = persistentMapOf(),
                 newEntryType = null,
                 newEntryName = ""
             )
@@ -76,25 +88,104 @@ class FilePickerViewModel(private val fileRepository: RootFileRepository) : View
     }
 
     private fun navigateToHome() {
-        navigate(path = Environment.getExternalStorageDirectory().absolutePath, forwardPath = null)
+        val path = Environment.getExternalStorageDirectory().absolutePath
+        navigate(path, forwardPath = null, directoryHistory = persistentListOf(path))
     }
 
     private fun navigateUp() {
         val state = _uiState.value
-        val parent = File(state.currentPath).parent ?: state.currentPath
-        navigate(path = parent, forwardPath = state.currentPath)
+        val parent = parentPath(state.currentPath)
+        val history = if (state.directoryHistory.lastOrNull() == state.currentPath &&
+            state.directoryHistory.size > 1
+        ) {
+            state.directoryHistory.toPersistentList().removingAt(state.directoryHistory.lastIndex)
+        } else {
+            persistentListOf(parent)
+        }
+        navigate(path = parent, forwardPath = state.currentPath, directoryHistory = history)
     }
 
     private fun navigateForward() {
-        val forwardPath = _uiState.value.forwardPath ?: return
-        navigate(path = forwardPath, forwardPath = null)
+        val state = _uiState.value
+        val forwardPath = state.forwardPath ?: return
+        navigate(
+            path = forwardPath,
+            forwardPath = null,
+            directoryHistory = state.directoryHistory.toPersistentList().adding(forwardPath)
+        )
+    }
+
+    private fun navigateToPath(path: String) {
+        val history = _uiState.value.directoryHistory
+        val index = history.indexOf(path)
+        val destinationHistory = if (index >= 0) {
+            history.take(index + 1).toPersistentList()
+        } else {
+            persistentListOf(path)
+        }
+        navigate(path, forwardPath = null, directoryHistory = destinationHistory)
     }
 
     private fun select(entry: FileEntryUiModel) {
         if (!entry.isDirectory && entry.isFile) {
             emit(FilePickerEffect.FileSelected(entry.path))
         } else {
-            navigate(path = entry.path, forwardPath = _uiState.value.forwardPath)
+            val state = _uiState.value
+            val parentPath = parentPath(entry.path)
+            val parentIndex = state.directoryHistory.indexOf(parentPath)
+            val history = if (parentIndex >= 0) {
+                state.directoryHistory.take(parentIndex + 1).toPersistentList()
+            } else {
+                persistentListOf(parentPath)
+            }
+            navigate(
+                path = entry.path,
+                forwardPath = state.forwardPath,
+                directoryHistory = history.adding(entry.path)
+            )
+        }
+    }
+
+    private fun loadFileSize(path: String) {
+        val state = _uiState.value
+        if (state.fileSizes.containsKey(path) || fileSizeJobs.containsKey(path)) return
+
+        _uiState.update {
+            it.copy(
+                fileSizes = it.fileSizes.toPersistentMap().putting(path, FileSizeUiState.Loading)
+            )
+        }
+        fileSizeJobs[path] = viewModelScope.launch {
+            try {
+                val sizeState = when (val result = fileRepository.fileSize(path)) {
+                    is FileSizeResult.Success -> FileSizeUiState.Available(result.bytes)
+                    FileSizeResult.Failure -> FileSizeUiState.Unavailable
+                }
+                if (isOpen) {
+                    _uiState.update {
+                        it.copy(
+                            fileSizes = it.fileSizes.toPersistentMap().putting(path, sizeState)
+                        )
+                    }
+                }
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (_: Exception) {
+                if (isOpen) {
+                    _uiState.update {
+                        it.copy(
+                            fileSizes = it.fileSizes.toPersistentMap().putting(
+                                path,
+                                FileSizeUiState.Unavailable
+                            )
+                        )
+                    }
+                }
+            } finally {
+                if (fileSizeJobs[path] === coroutineContext[Job]) {
+                    fileSizeJobs.remove(path)
+                }
+            }
         }
     }
 
@@ -112,12 +203,17 @@ class FilePickerViewModel(private val fileRepository: RootFileRepository) : View
         create(name, isDirectory)
     }
 
-    private fun navigate(path: String, forwardPath: String?) {
+    private fun navigate(
+        path: String,
+        forwardPath: String?,
+        directoryHistory: kotlinx.collections.immutable.ImmutableList<String>
+    ) {
         _uiState.update {
             it.copy(
                 currentPath = path,
                 forwardPath = forwardPath,
-                entries = persistentListOf(),
+                directoryHistory = directoryHistory,
+                entries = it.directoryEntries[path] ?: persistentListOf(),
                 listingFailed = false,
                 errorMessage = null
             )
@@ -135,12 +231,14 @@ class FilePickerViewModel(private val fileRepository: RootFileRepository) : View
                 when (val result = fileRepository.list(path)) {
                     is DirectoryListingResult.Success -> {
                         if (isCurrent(thisRequest, path)) {
+                            val entries = result.entries.map { entry -> entry.toUiModel() }
+                                .toPersistentList()
                             _uiState.update {
                                 it.copy(
                                     currentPath = path,
                                     forwardPath = forwardPath,
-                                    entries = result.entries.map { entry -> entry.toUiModel() }
-                                        .toPersistentList(),
+                                    entries = entries,
+                                    directoryEntries = it.directoryEntries.toPersistentMap().putting(path, entries),
                                     isLoading = false,
                                     listingFailed = false,
                                     errorMessage = null
@@ -199,7 +297,13 @@ class FilePickerViewModel(private val fileRepository: RootFileRepository) : View
                 when (result) {
                     is FileCreationResult.Created -> {
                         if (isDirectory) {
-                            navigate(result.entry.path, forwardPath = null)
+                            navigate(
+                                path = result.entry.path,
+                                forwardPath = null,
+                                directoryHistory = state.directoryHistory
+                                    .toPersistentList()
+                                    .adding(result.entry.path)
+                            )
                         } else {
                             emit(FilePickerEffect.FileSelected(result.entry.path))
                         }
@@ -228,6 +332,14 @@ class FilePickerViewModel(private val fileRepository: RootFileRepository) : View
     private fun isCurrent(expectedRequestId: Long, expectedPath: String): Boolean =
         isOpen && expectedRequestId == requestId &&
             expectedPath == _uiState.value.currentPath
+
+    private fun parentPath(path: String): String {
+        val normalized = path.trimEnd('/')
+        if (normalized.isEmpty()) return "/"
+
+        val separator = normalized.lastIndexOf('/')
+        return if (separator <= 0) "/" else normalized.substring(0, separator)
+    }
 
     private fun emit(effect: FilePickerEffect) {
         viewModelScope.launch { effectChannel.send(effect) }

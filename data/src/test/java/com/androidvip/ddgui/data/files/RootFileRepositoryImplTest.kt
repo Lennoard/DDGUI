@@ -2,6 +2,7 @@ package com.androidvip.ddgui.data.files
 
 import com.androidvip.ddgui.domain.files.DirectoryListingResult
 import com.androidvip.ddgui.domain.files.FileBrowserFailure
+import com.androidvip.ddgui.domain.files.FileSizeResult
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -64,5 +65,39 @@ class RootFileRepositoryImplTest {
             DirectoryListingResult.Failure(FileBrowserFailure.ACCESS_DENIED_OR_NOT_DIRECTORY),
             failedResult
         )
+    }
+
+    @Test
+    fun `given a file size when requested then returns its byte count`() = runTest {
+        // Given
+        val source = mockk<RootFileDataSource>()
+        every { source.fileSize("/image.img") } returns RootFileSourceResult.Success(1024L)
+        val repository = RootFileRepositoryImpl(
+            source,
+            StandardTestDispatcher(testScheduler)
+        )
+
+        // When
+        val result = repository.fileSize("/image.img")
+
+        // Then
+        assertEquals(FileSizeResult.Success(1024L), result)
+    }
+
+    @Test
+    fun `given an inaccessible file when size is requested then returns failure`() = runTest {
+        // Given
+        val source = mockk<RootFileDataSource>()
+        every { source.fileSize("/inaccessible.img") } returns RootFileSourceResult.Failure
+        val repository = RootFileRepositoryImpl(
+            source,
+            StandardTestDispatcher(testScheduler)
+        )
+
+        // When
+        val result = repository.fileSize("/inaccessible.img")
+
+        // Then
+        assertEquals(FileSizeResult.Failure, result)
     }
 }

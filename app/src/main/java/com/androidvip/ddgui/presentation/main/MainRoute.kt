@@ -17,7 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,12 +24,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import com.androidvip.ddgui.R
-import com.androidvip.ddgui.presentation.files.FilePickerDialog
 import com.androidvip.ddgui.presentation.files.FilePickerEvent
+import com.androidvip.ddgui.presentation.files.FilePickerScreen
 import com.androidvip.ddgui.presentation.files.FilePickerViewModel
 
 private const val MAIN_DESTINATION = "main"
 private const val SETTINGS_DESTINATION = "settings"
+private const val FILE_PICKER_DESTINATION = "file-picker"
 
 private val navigationBackStackSaver = listSaver<SnapshotStateList<String>, String>(
     save = { it.toList() },
@@ -54,6 +54,13 @@ fun MainRoute(
     var pendingExitConfirmation by rememberSaveable { mutableStateOf(false) }
     val backStack = rememberSaveable(saver = navigationBackStackSaver) {
         mutableStateListOf(MAIN_DESTINATION)
+    }
+    val dismissFilePicker = {
+        mainViewModel.onEvent(MainUiEvent.DismissPicker)
+        filePickerViewModel.onEvent(FilePickerEvent.Close)
+        if (backStack.lastOrNull() == FILE_PICKER_DESTINATION) {
+            backStack.removeLastOrNull()
+        }
     }
 
     LaunchedEffect(
@@ -103,7 +110,13 @@ fun MainRoute(
 
     NavDisplay(
         backStack = backStack,
-        onBack = { if (backStack.size > 1) backStack.removeLastOrNull() },
+        onBack = {
+            if (backStack.lastOrNull() == FILE_PICKER_DESTINATION) {
+                dismissFilePicker()
+            } else if (backStack.size > 1) {
+                backStack.removeLastOrNull()
+            }
+        },
         entryProvider = { key ->
             when (key) {
                 MAIN_DESTINATION -> NavEntry(key) {
@@ -111,15 +124,19 @@ fun MainRoute(
                         state = state,
                         snackbarHostState = snackbarHostState,
                         onEvent = { event ->
-                            mainViewModel.onEvent(event)
                             when (event) {
-                                is MainUiEvent.OpenPicker ->
+                                is MainUiEvent.OpenPicker -> {
+                                    mainViewModel.onEvent(event)
                                     filePickerViewModel.onEvent(FilePickerEvent.Open)
+                                    if (backStack.lastOrNull() != FILE_PICKER_DESTINATION) {
+                                        backStack.add(FILE_PICKER_DESTINATION)
+                                    }
+                                }
 
                                 MainUiEvent.DismissPicker ->
-                                    filePickerViewModel.onEvent(FilePickerEvent.Close)
+                                    dismissFilePicker()
 
-                                else -> Unit
+                                else -> mainViewModel.onEvent(event)
                             }
                         },
                         onDisclaimer = onDisclaimer,
@@ -135,25 +152,24 @@ fun MainRoute(
                     )
                 }
 
+                FILE_PICKER_DESTINATION -> NavEntry(key) {
+                    FilePickerScreen(
+                        state = pickerState,
+                        effects = filePickerViewModel.effects,
+                        onEvent = filePickerViewModel::onEvent,
+                        onFileSelected = { path ->
+                            mainViewModel.onEvent(MainUiEvent.FileSelected(path))
+                            filePickerViewModel.onEvent(FilePickerEvent.Close)
+                            backStack.removeLastOrNull()
+                        },
+                        onDismiss = dismissFilePicker
+                    )
+                }
+
                 else -> error("Unknown navigation destination: $key")
             }
         }
     )
-
-    if (state.pickerTarget != null) {
-        FilePickerDialog(
-            state = pickerState,
-            effects = filePickerViewModel.effects,
-            onEvent = filePickerViewModel::onEvent,
-            onFileSelected = { path ->
-                mainViewModel.onEvent(MainUiEvent.FileSelected(path))
-                filePickerViewModel.onEvent(FilePickerEvent.Close)
-            },
-            onDismiss = {
-                mainViewModel.onEvent(MainUiEvent.DismissPicker)
-            }
-        )
-    }
 
     if (pendingExitConfirmation && state.executionStatus == ExecutionUiStatus.Running) {
         AlertDialog(

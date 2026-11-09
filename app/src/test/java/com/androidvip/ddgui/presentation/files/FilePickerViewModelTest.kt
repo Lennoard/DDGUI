@@ -1,6 +1,7 @@
 package com.androidvip.ddgui.presentation.files
 
 import com.androidvip.ddgui.domain.files.DirectoryListingResult
+import com.androidvip.ddgui.domain.files.FileSizeResult
 import com.androidvip.ddgui.domain.files.RootFileEntry
 import com.androidvip.ddgui.domain.files.RootFileRepository
 import io.mockk.coEvery
@@ -18,6 +19,72 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FilePickerViewModelTest {
+    @Test
+    fun `given a visible file and nested directory when size loads and breadcrumb navigates then state stays consistent`() = runTest {
+        // Given
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        try {
+            val repository = mockk<RootFileRepository>()
+            coEvery { repository.list("/") } returns DirectoryListingResult.Success(
+                listOf(
+                    RootFileEntry(
+                        path = "/folder",
+                        name = "folder",
+                        isDirectory = true,
+                        isFile = false
+                    ),
+                    RootFileEntry(
+                        path = "/image.img",
+                        name = "image.img",
+                        isDirectory = false,
+                        isFile = true
+                    ),
+                    RootFileEntry(
+                        path = "/other",
+                        name = "other",
+                        isDirectory = true,
+                        isFile = false
+                    )
+                )
+            )
+            coEvery { repository.list("/folder") } returns DirectoryListingResult.Success(emptyList())
+            coEvery { repository.list("/other") } returns DirectoryListingResult.Success(emptyList())
+            coEvery { repository.fileSize("/image.img") } returns FileSizeResult.Success(2048L)
+            val viewModel = FilePickerViewModel(repository)
+
+            // When
+            viewModel.onEvent(FilePickerEvent.Open)
+            val rootState = viewModel.uiState.first { !it.isLoading && it.entries.size == 3 }
+            viewModel.onEvent(FilePickerEvent.LoadFileSize("/image.img"))
+            val sizedState = viewModel.uiState.first {
+                it.fileSizes["/image.img"] is FileSizeUiState.Available
+            }
+            viewModel.onEvent(FilePickerEvent.Select(rootState.entries.first()))
+            val folderState = viewModel.uiState.first {
+                it.currentPath == "/folder" && !it.isLoading
+            }
+            viewModel.onEvent(
+                FilePickerEvent.Select(rootState.entries.first { it.path == "/other" })
+            )
+            val otherState = viewModel.uiState.first {
+                it.currentPath == "/other" && !it.isLoading
+            }
+            viewModel.onEvent(FilePickerEvent.NavigateToPath("/"))
+            val navigatedState = viewModel.uiState.first {
+                it.currentPath == "/" && !it.isLoading
+            }
+
+            // Then
+            assertEquals(FileSizeUiState.Available(2048L), sizedState.fileSizes["/image.img"])
+            assertEquals(listOf("/", "/folder"), folderState.directoryHistory)
+            assertEquals(listOf("/", "/other"), otherState.directoryHistory)
+            assertEquals(listOf("/"), navigatedState.directoryHistory)
+            viewModel.onEvent(FilePickerEvent.Close)
+        } finally {
+            Dispatchers.resetMain()
+        }
+    }
+
     @Test
     fun `given listed file when selected then emits its path`() = runTest {
         // Given

@@ -47,6 +47,8 @@
     <string name="no">No</string>
     <string name="directory_entry">Folder: %1$s</string>
     <string name="file_entry">File: %1$s</string>
+    <string name="file_size_unavailable" tools:ignore="MissingTranslation">Size unavailable</string>
+    <string name="file_picker_title" tools:ignore="MissingTranslation">Select a file</string>
     <string name="destructive_review_title" tools:ignore="MissingTranslation">Review write operation</string>
     <string name="destructive_review_warning" tools:ignore="MissingTranslation">This operation writes to the destination and may overwrite existing data. Verify both paths and every option before continuing.</string>
     <string name="review_source" tools:ignore="MissingTranslation">Source</string>

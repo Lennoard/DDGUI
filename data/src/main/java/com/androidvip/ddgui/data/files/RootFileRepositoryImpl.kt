@@ -3,6 +3,7 @@ package com.androidvip.ddgui.data.files
 import com.androidvip.ddgui.domain.files.DirectoryListingResult
 import com.androidvip.ddgui.domain.files.FileBrowserFailure
 import com.androidvip.ddgui.domain.files.FileCreationResult
+import com.androidvip.ddgui.domain.files.FileSizeResult
 import com.androidvip.ddgui.domain.files.RootFileEntry
 import com.androidvip.ddgui.domain.files.RootFileRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,6 +29,13 @@ class RootFileRepositoryImpl internal constructor(
             RootFileSourceResult.Failure -> {
                 DirectoryListingResult.Failure(FileBrowserFailure.ACCESS_DENIED_OR_NOT_DIRECTORY)
             }
+        }
+    }
+
+    override suspend fun fileSize(path: String): FileSizeResult = withContext(ioDispatcher) {
+        when (val result = source.fileSize(path)) {
+            is RootFileSourceResult.Success -> FileSizeResult.Success(result.value)
+            RootFileSourceResult.Failure -> FileSizeResult.Failure
         }
     }
 

@@ -11,6 +11,7 @@ internal sealed interface RootFileSourceResult<out T> {
 
 internal interface RootFileDataSource {
     fun list(path: String): RootFileSourceResult<List<File>>
+    fun fileSize(path: String): RootFileSourceResult<Long>
     fun createFile(parentPath: String, name: String): RootFileSourceResult<File>
     fun createDirectory(parentPath: String, name: String): RootFileSourceResult<File>
 }
@@ -21,6 +22,19 @@ internal class SuFileDataSource : RootFileDataSource {
             val entries = SuFile.open(path).listFiles()
                 ?: return RootFileSourceResult.Failure
             RootFileSourceResult.Success(entries.toList())
+        } catch (_: SecurityException) {
+            RootFileSourceResult.Failure
+        }
+    }
+
+    override fun fileSize(path: String): RootFileSourceResult<Long> {
+        return try {
+            val file = SuFile.open(path)
+            if (file.exists() && file.isFile) {
+                RootFileSourceResult.Success(file.length())
+            } else {
+                RootFileSourceResult.Failure
+            }
         } catch (_: SecurityException) {
             RootFileSourceResult.Failure
         }
