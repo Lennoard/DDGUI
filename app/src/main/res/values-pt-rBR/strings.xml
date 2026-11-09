@@ -47,4 +47,16 @@
     <string name="no">Não</string>
     <string name="directory_entry">Pasta: %1$s</string>
     <string name="file_entry">Arquivo: %1$s</string>
+    <string name="destructive_review_title">Revise a operação de gravação</string>
+    <string name="destructive_review_warning">Esta operação grava no destino e pode sobrescrever dados existentes. Confira os dois caminhos e todas as opções antes de continuar.</string>
+    <string name="review_source">Origem</string>
+    <string name="review_destination">Destino</string>
+    <string name="review_conversions">Conversões selecionadas</string>
+    <string name="review_no_conversions">Nenhuma</string>
+    <string name="confirm_write">Entendi, continuar com a gravação</string>
+    <string name="cancel">Cancelar</string>
+    <string name="settings_title">Configurações</string>
+    <string name="show_write_warning">Mostrar um aviso antes de cada gravação</string>
+    <string name="warning_dialog_disabled_note">Mesmo desativado, uma revisão e uma confirmação final separada ainda serão exigidas.</string>
+    <string name="settings_unavailable">Não foi possível ler ou salvar as configurações. O aviso de gravação continuará ativado.</string>
 </resources>

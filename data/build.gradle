@@ -7,7 +7,7 @@ android {
     compileSdk 37
 
     defaultConfig {
-        minSdk 23
+        minSdk 24
     }
 
     compileOptions {
@@ -19,6 +19,9 @@ android {
 dependencies {
     implementation project(':domain')
     implementation libs.coroutines.android
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.preference
+    implementation libs.koin.android
     implementation libs.libsu.core
     implementation libs.libsu.io
     implementation libs.koin.core

@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.androidvip.ddgui"
-        minSdk 23
+        minSdk 24
         targetSdk 37
         versionCode 5
         versionName "1.0.1"
@@ -69,6 +69,8 @@ dependencies {
     implementation libs.compose.foundation
     implementation libs.compose.material3
     implementation libs.compose.material3.adaptive
+    implementation libs.navigation3.runtime
+    implementation libs.navigation3.ui
     implementation libs.kotlinx.collections.immutable
 
     debugImplementation libs.compose.ui.tooling

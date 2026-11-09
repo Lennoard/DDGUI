@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.androidvip.ddgui.domain.dd.DdConversion
 import com.androidvip.ddgui.domain.dd.DdRepository
+import com.androidvip.ddgui.domain.dd.DdRequest
+import com.androidvip.ddgui.domain.settings.DestructiveOperationSettingsRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,14 +14,20 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val ddRepository: DdRepository) : ViewModel() {
+class MainViewModel(
+    private val ddRepository: DdRepository,
+    private val settingsRepository: DestructiveOperationSettingsRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
 
     private val effectChannel = Channel<MainUiEffect>(Channel.BUFFERED)
     val effects = effectChannel.receiveAsFlow()
 
+    private var pendingRequest: DdRequest? = null
+
     init {
+        loadSettings()
         onEvent(MainUiEvent.CheckRootAccess)
     }
 
@@ -39,9 +47,33 @@ class MainViewModel(private val ddRepository: DdRepository) : ViewModel() {
                 _uiState.update { it.copy(pickerTarget = null) }
 
             is MainUiEvent.FileSelected -> onFileSelected(event.path)
-            MainUiEvent.Execute -> execute()
+            MainUiEvent.Execute -> requestExecution()
+            MainUiEvent.ConfirmExecution -> confirmExecution()
+            MainUiEvent.CancelExecutionReview -> cancelExecutionReview()
+            MainUiEvent.OpenSettings ->
+                effectChannel.trySend(MainUiEffect.NavigateToSettings)
+
+            is MainUiEvent.WarningDialogChanged -> setWarningDialog(event.enabled)
             MainUiEvent.ResetAfterExecution -> resetAfterExecution()
             MainUiEvent.CheckRootAccess -> checkRootAccess()
+        }
+    }
+
+    private fun loadSettings() {
+        try {
+            _uiState.update { it.copy(showWarningDialog = settingsRepository.isWarningDialogEnabled()) }
+        } catch (exception: Exception) {
+            _uiState.update { it.copy(showWarningDialog = true) }
+            emit(MainUiMessage.SettingsUnavailable)
+        }
+    }
+
+    private fun setWarningDialog(enabled: Boolean) {
+        try {
+            settingsRepository.setWarningDialogEnabled(enabled)
+            _uiState.update { it.copy(showWarningDialog = enabled) }
+        } catch (exception: Exception) {
+            emit(MainUiMessage.SettingsUnavailable)
         }
     }
 
@@ -90,15 +122,42 @@ class MainViewModel(private val ddRepository: DdRepository) : ViewModel() {
         }
     }
 
-    private fun execute() {
+    private fun requestExecution() {
         val current = _uiState.value
         when {
             current.inputPath.isBlank() -> emit(MainUiMessage.MissingInput)
             current.outputPath.isBlank() -> emit(MainUiMessage.MissingOutput)
             current.rootStatus != RootUiStatus.Ready -> return
             current.executionStatus == ExecutionUiStatus.Running -> return
-            else -> execute(current)
+            current.executionReview != null -> return
+            else -> {
+                val request = current.toDdRequest()
+                pendingRequest = request
+                _uiState.update {
+                    it.copy(executionReview = request.toExecutionReviewUiModel())
+                }
+            }
         }
+    }
+
+    private fun confirmExecution() {
+        val request = pendingRequest ?: return
+        val state = _uiState.value
+        if (state.rootStatus != RootUiStatus.Ready ||
+            state.executionStatus != ExecutionUiStatus.Idle ||
+            state.executionReview == null
+        ) {
+            cancelExecutionReview()
+            return
+        }
+        pendingRequest = null
+        _uiState.update { it.copy(executionReview = null) }
+        execute(request)
+    }
+
+    private fun cancelExecutionReview() {
+        pendingRequest = null
+        _uiState.update { it.copy(executionReview = null) }
     }
 
     private fun resetAfterExecution() {
@@ -112,6 +171,7 @@ class MainViewModel(private val ddRepository: DdRepository) : ViewModel() {
                     sync = false,
                     fsync = false,
                     swab = false,
+                    executionReview = null,
                     executionStatus = ExecutionUiStatus.Idle,
                     resultMessage = null,
                     outputText = ""
@@ -120,7 +180,7 @@ class MainViewModel(private val ddRepository: DdRepository) : ViewModel() {
         }
     }
 
-    private fun execute(requestState: MainUiState) {
+    private fun execute(request: DdRequest) {
         _uiState.update {
             it.copy(
                 executionStatus = ExecutionUiStatus.Running,
@@ -130,7 +190,7 @@ class MainViewModel(private val ddRepository: DdRepository) : ViewModel() {
         }
         viewModelScope.launch {
             try {
-                val result = ddRepository.execute(requestState.toDdRequest()) { line ->
+                val result = ddRepository.execute(request) { line ->
                     _uiState.update { state ->
                         state.copy(outputText = appendLine(state.outputText, line))
                     }

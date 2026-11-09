@@ -3,6 +3,8 @@ package com.androidvip.ddgui.presentation.main
 import androidx.compose.runtime.Immutable
 import com.androidvip.ddgui.domain.dd.DdConversion
 import com.androidvip.ddgui.domain.dd.DdRequest
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 @Immutable
 data class MainUiState(
@@ -18,7 +20,16 @@ data class MainUiState(
     val executionStatus: ExecutionUiStatus = ExecutionUiStatus.Idle,
     val resultMessage: ResultUiMessage? = null,
     val outputText: String = "",
-    val pickerTarget: PickerTarget? = null
+    val pickerTarget: PickerTarget? = null,
+    val executionReview: ExecutionReviewUiModel? = null,
+    val showWarningDialog: Boolean = true
+)
+
+@Immutable
+data class ExecutionReviewUiModel(
+    val inputPath: String,
+    val outputPath: String,
+    val conversions: ImmutableList<DdConversion>
 )
 
 enum class RootUiStatus {
@@ -48,12 +59,14 @@ enum class PickerTarget {
 
 enum class MainUiMessage {
     MissingInput,
-    MissingOutput
+    MissingOutput,
+    SettingsUnavailable
 }
 
 @Immutable
 sealed interface MainUiEffect {
     data class ShowMessage(val message: MainUiMessage) : MainUiEffect
+    data object NavigateToSettings : MainUiEffect
 }
 
 @Immutable
@@ -69,6 +82,10 @@ sealed interface MainUiEvent {
     data object DismissPicker : MainUiEvent
     data class FileSelected(val path: String) : MainUiEvent
     data object Execute : MainUiEvent
+    data object ConfirmExecution : MainUiEvent
+    data object CancelExecutionReview : MainUiEvent
+    data object OpenSettings : MainUiEvent
+    data class WarningDialogChanged(val enabled: Boolean) : MainUiEvent
     data object ResetAfterExecution : MainUiEvent
     data object CheckRootAccess : MainUiEvent
 }
@@ -84,3 +101,10 @@ fun MainUiState.toDdRequest(): DdRequest = DdRequest(
         if (swab) add(DdConversion.SWAB)
     }
 )
+
+fun DdRequest.toExecutionReviewUiModel(): ExecutionReviewUiModel =
+    ExecutionReviewUiModel(
+        inputPath = inputPath,
+        outputPath = outputPath,
+        conversions = conversions.toPersistentList()
+    )

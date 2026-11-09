@@ -1,6 +1,9 @@
 package com.androidvip.ddgui.presentation.main
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.androidvip.ddgui.R
+import com.androidvip.ddgui.domain.dd.DdConversion
 import com.androidvip.ddgui.domain.dd.DdExecutionResult
 import com.androidvip.ddgui.domain.dd.RootAccess
 
@@ -31,4 +34,13 @@ fun DdExecutionResult.toUiModel(): ExecutionResultUiModel = when (this) {
         message = ResultUiMessage.InvalidRequest,
         errorText = message
     )
+}
+
+@StringRes
+internal fun DdConversion.toLabelRes(): Int = when (this) {
+    DdConversion.NO_TRUNCATE -> R.string.conversion_no_truncate
+    DdConversion.NO_ERROR -> R.string.conversion_no_error
+    DdConversion.SYNC -> R.string.conversion_sync
+    DdConversion.FSYNC -> R.string.conversionFsync
+    DdConversion.SWAB -> R.string.conversionSwab
 }
