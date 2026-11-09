@@ -3,7 +3,6 @@ package com.androidvip.ddgui.presentation.main
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,6 +37,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,6 +58,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -286,15 +287,28 @@ private fun MainForm(
 ) {
     val outputFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-    BoxWithConstraints(Modifier.fillMaxSize()) {
-        val wideLayout = maxWidth >= 700.dp
+    val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
+    val expandedLayout = windowSizeClass.isWidthAtLeastBreakpoint(
+        WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND
+    ) && windowSizeClass.isHeightAtLeastBreakpoint(
+        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+    )
+    val mediumLayout = !expandedLayout && windowSizeClass.isWidthAtLeastBreakpoint(
+        WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
+    )
+    val horizontalPadding = when {
+        expandedLayout -> 32.dp
+        mediumLayout -> 24.dp
+        else -> 16.dp
+    }
+    Box(Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .widthIn(max = 1000.dp)
+                .widthIn(max = 1200.dp)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = horizontalPadding, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
@@ -302,96 +316,161 @@ private fun MainForm(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
-            if (wideLayout) {
+            if (expandedLayout) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    PathCard(
-                        title = stringResource(R.string.input),
-                        value = state.inputPath,
-                        onValueChanged = { onEvent(MainUiEvent.InputChanged(it)) },
-                        onPick = { onEvent(MainUiEvent.OpenPicker(PickerTarget.Input)) },
-                        modifier = Modifier.weight(1f),
-                        imeAction = ImeAction.Next,
-                        onImeAction = { outputFocusRequester.requestFocus() }
-                    )
-                    PathCard(
-                        title = stringResource(R.string.output),
-                        value = state.outputPath,
-                        onValueChanged = { onEvent(MainUiEvent.OutputChanged(it)) },
-                        onPick = { onEvent(MainUiEvent.OpenPicker(PickerTarget.Output)) },
-                        modifier = Modifier.weight(1f),
-                        imeAction = ImeAction.Done,
-                        focusRequester = outputFocusRequester,
-                        onImeAction = { keyboardController?.hide() }
+                    Column(
+                        modifier = Modifier.weight(1.4f),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        InputPathCard(state.inputPath, onEvent, outputFocusRequester)
+                        OutputPathCard(
+                            state.outputPath,
+                            onEvent,
+                            outputFocusRequester,
+                            keyboardController
+                        )
+                    }
+                    ConversionCard(
+                        state = state,
+                        onEvent = onEvent,
+                        twoColumns = false,
+                        modifier = Modifier.weight(1f)
                     )
                 }
+            } else if (mediumLayout) {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    InputPathCard(
+                        state.inputPath,
+                        onEvent,
+                        outputFocusRequester,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutputPathCard(
+                        state.outputPath,
+                        onEvent,
+                        outputFocusRequester,
+                        keyboardController,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                ConversionCard(state = state, onEvent = onEvent, twoColumns = true)
             } else {
-                PathCard(
-                    title = stringResource(R.string.input),
-                    value = state.inputPath,
-                    onValueChanged = { onEvent(MainUiEvent.InputChanged(it)) },
-                    onPick = { onEvent(MainUiEvent.OpenPicker(PickerTarget.Input)) },
-                    imeAction = ImeAction.Next,
-                    onImeAction = { outputFocusRequester.requestFocus() }
+                InputPathCard(state.inputPath, onEvent, outputFocusRequester)
+                OutputPathCard(
+                    state.outputPath,
+                    onEvent,
+                    outputFocusRequester,
+                    keyboardController
                 )
-                PathCard(
-                    title = stringResource(R.string.output),
-                    value = state.outputPath,
-                    onValueChanged = { onEvent(MainUiEvent.OutputChanged(it)) },
-                    onPick = { onEvent(MainUiEvent.OpenPicker(PickerTarget.Output)) },
-                    imeAction = ImeAction.Done,
-                    focusRequester = outputFocusRequester,
-                    onImeAction = { keyboardController?.hide() }
-                )
-            }
-            Card(Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.conversions),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    ConversionCheck(
-                        text = stringResource(R.string.conversion_no_truncate),
-                        checked = state.noTruncate,
-                        onCheckedChange = {
-                            onEvent(MainUiEvent.ConversionChanged(DdConversion.NO_TRUNCATE, it))
-                        }
-                    )
-                    ConversionCheck(
-                        text = stringResource(R.string.conversion_no_error),
-                        checked = state.noError,
-                        onCheckedChange = {
-                            onEvent(MainUiEvent.ConversionChanged(DdConversion.NO_ERROR, it))
-                        }
-                    )
-                    ConversionCheck(
-                        text = stringResource(R.string.conversion_sync),
-                        checked = state.sync,
-                        onCheckedChange = {
-                            onEvent(MainUiEvent.ConversionChanged(DdConversion.SYNC, it))
-                        }
-                    )
-                    ConversionCheck(
-                        text = stringResource(R.string.conversionFsync),
-                        checked = state.fsync,
-                        onCheckedChange = {
-                            onEvent(MainUiEvent.ConversionChanged(DdConversion.FSYNC, it))
-                        }
-                    )
-                    ConversionCheck(
-                        text = stringResource(R.string.conversionSwab),
-                        checked = state.swab,
-                        onCheckedChange = {
-                            onEvent(MainUiEvent.ConversionChanged(DdConversion.SWAB, it))
-                        }
-                    )
-                }
+                ConversionCard(state = state, onEvent = onEvent, twoColumns = false)
             }
             Spacer(Modifier.height(72.dp))
         }
     }
+}
+
+@Composable
+private fun InputPathCard(
+    path: String,
+    onEvent: (MainUiEvent) -> Unit,
+    outputFocusRequester: FocusRequester,
+    modifier: Modifier = Modifier
+) {
+    PathCard(
+        title = stringResource(R.string.input),
+        value = path,
+        onValueChanged = { onEvent(MainUiEvent.InputChanged(it)) },
+        onPick = { onEvent(MainUiEvent.OpenPicker(PickerTarget.Input)) },
+        modifier = modifier,
+        imeAction = ImeAction.Next,
+        onImeAction = { outputFocusRequester.requestFocus() }
+    )
+}
+
+@Composable
+private fun OutputPathCard(
+    path: String,
+    onEvent: (MainUiEvent) -> Unit,
+    outputFocusRequester: FocusRequester,
+    keyboardController: androidx.compose.ui.platform.SoftwareKeyboardController?,
+    modifier: Modifier = Modifier
+) {
+    PathCard(
+        title = stringResource(R.string.output),
+        value = path,
+        onValueChanged = { onEvent(MainUiEvent.OutputChanged(it)) },
+        onPick = { onEvent(MainUiEvent.OpenPicker(PickerTarget.Output)) },
+        modifier = modifier,
+        imeAction = ImeAction.Done,
+        focusRequester = outputFocusRequester,
+        onImeAction = { keyboardController?.hide() }
+    )
+}
+
+@Composable
+private fun ConversionCard(
+    state: MainUiState,
+    onEvent: (MainUiEvent) -> Unit,
+    twoColumns: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Card(modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.conversions),
+                style = MaterialTheme.typography.titleMedium
+            )
+            if (twoColumns) {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(Modifier.weight(1f)) {
+                        ConversionOption(state, onEvent, DdConversion.NO_TRUNCATE)
+                        ConversionOption(state, onEvent, DdConversion.NO_ERROR)
+                        ConversionOption(state, onEvent, DdConversion.SYNC)
+                    }
+                    Column(Modifier.weight(1f)) {
+                        ConversionOption(state, onEvent, DdConversion.FSYNC)
+                        ConversionOption(state, onEvent, DdConversion.SWAB)
+                    }
+                }
+            } else {
+                ConversionOption(state, onEvent, DdConversion.NO_TRUNCATE)
+                ConversionOption(state, onEvent, DdConversion.NO_ERROR)
+                ConversionOption(state, onEvent, DdConversion.SYNC)
+                ConversionOption(state, onEvent, DdConversion.FSYNC)
+                ConversionOption(state, onEvent, DdConversion.SWAB)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ConversionOption(
+    state: MainUiState,
+    onEvent: (MainUiEvent) -> Unit,
+    conversion: DdConversion
+) {
+    val label = when (conversion) {
+        DdConversion.NO_TRUNCATE -> stringResource(R.string.conversion_no_truncate)
+        DdConversion.NO_ERROR -> stringResource(R.string.conversion_no_error)
+        DdConversion.SYNC -> stringResource(R.string.conversion_sync)
+        DdConversion.FSYNC -> stringResource(R.string.conversionFsync)
+        DdConversion.SWAB -> stringResource(R.string.conversionSwab)
+    }
+    val checked = when (conversion) {
+        DdConversion.NO_TRUNCATE -> state.noTruncate
+        DdConversion.NO_ERROR -> state.noError
+        DdConversion.SYNC -> state.sync
+        DdConversion.FSYNC -> state.fsync
+        DdConversion.SWAB -> state.swab
+    }
+    ConversionCheck(
+        text = label,
+        checked = checked,
+        onCheckedChange = { onEvent(MainUiEvent.ConversionChanged(conversion, it)) }
+    )
 }
 
 @Composable
