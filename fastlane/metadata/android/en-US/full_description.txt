@@ -1,0 +1,12 @@
+<p>DD GUI is a graphical interface for running the <code>dd</code> command on Android. Root access is required.</p>
+
+<p><b>Features</b></p>
+<ul>
+<li>Copy data between selected files and root-visible block devices.</li>
+<li>Browse root-visible directories and create files or folders.</li>
+<li>Choose input and output paths and select the supported <code>dd</code> conversions: <code>notrunc</code>, <code>noerror</code>, <code>sync</code>, <code>fsync</code>, and <code>swab</code>.</li>
+<li>Review the source, destination, and conversions before writing, followed by a separate final confirmation.</li>
+<li>Select a special or unrecognized entry, such as a possible boot or recovery block device, after an explicit warning.</li>
+</ul>
+
+<p><b>Warning:</b> Writing to a block device can permanently destroy data or make a device unbootable. Verify paths before confirming. The app does not discover or verify partition layouts or image compatibility. Root access does not guarantee that Android or device security policy will permit access to a path.</p>

@@ -1,40 +1,66 @@
 <p align="center">
-  <img height="360" src="https://i.imgur.com/6X3DnAw.jpg"/>
-  <img height="360" src="https://i.imgur.com/Qc4wRol.jpg"/>
-  <img height="360" src="https://i.imgur.com/tDZwrrx.jpg"/>
+  <img alt="DD GUI icon" width="192" height="192" src="web_hi_res_512.png"/>
 </p>
 
-# DDGUI
+# DD GUI
 
-![](https://img.shields.io/github/languages/top/Lennoard/DDGUI)
-![](https://img.shields.io/github/license/Lennoard/DDGUI)
-![](https://img.shields.io/github/downloads/Lennoard/DDGUI/total)
-![](https://img.shields.io/github/contributors/Lennoard/DDGUI)
+DD GUI is a graphical interface for running the `dd` command on Android. Select input and output paths, choose supported conversions, and review each write before execution.
 
-A graphical interface for the good old dd command in a **rooted** Android environment
+**Root access is required.** The app cannot guarantee that a selected path is accessible on every device.
+Supports Android 7.0 (API 24) and later.
 
-DD GUI is a free and open source software (FOSS) whose objective is to facilitate the execution of dd commands by providing a graphical interface. Read more about dd here.
+[![Top language](https://img.shields.io/github/languages/top/Lennoard/DDGUI)](https://github.com/Lennoard/DDGUI)
+[![License](https://img.shields.io/github/license/Lennoard/DDGUI)](LICENSE.md)
+![GitHub downloads](https://img.shields.io/github/downloads/Lennoard/DDGUI/total)
+![GitHub contributors](https://img.shields.io/github/contributors/Lennoard/DDGUI)
 
-To quickly summarize what can be done with this command, here is a list:
-- Backup current system/kernel/recovery/[...] image to anywhere
-- Directly flash a new recovery/kernel (if recovery partition is known and it is a .img file)
-- Copy/replace files as root
+## Features
 
-## Disclaimer
->THIS APPLICATION CAN BE DANGEROUS. Under any circumstances, anyone who contributed to the development this application shall have no liability for any damages or losses caused by it.
-DD GUI is free and open source software made in hope that it will be useful to someone. By choosing to use this application, you and only you will be responsible for what you do with it.
+- Copy data between selected files and explicitly selected block-device paths, including image backup and write workflows, subject to device access restrictions.
+- Choose input and output paths with the root-aware file picker; browse directories and create files or folders.
+- Select `dd` conversions: `notrunc`, `noerror`, `sync`, `fsync`, and `swab`.
+- Review the exact source, destination, and selected conversions before a write. The Settings option can hide repeat warning dialogs, but a review and separate final confirmation are always required.
+- Select a special or unrecognized filesystem entry, such as a possible boot or recovery block device, after an explicit warning. This does not test whether Android or the device permits access.
+- Use adaptive Compose layouts for compact and wider windows.
 
-### Download
-<a href='https://apt.izzysoft.de/fdroid/index/apk/com.androidvip.ddgui'><img alt='Get it on IzzyOnDroid' height="64" src='https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png'/></a>
-<a href='https://labs.xda-developers.com/store/app/com.androidvip.ddgui'><img alt='Get it on Labs' height="64" src='https://i.imgur.com/Pz29bXH.png'/></a>
+## Safety
 
-### License
-This project is licensed under the terms of the MIT license.
+Writing to a block device can permanently destroy data or make a device unbootable. 
+Check the source and destination carefully before confirming.
+DD GUI does not discover or verify partition layouts, determine whether an image is compatible with a device, or bypass Android root and security restrictions.
 
-> Copyright (c) 2020 Lennoard.
->
-> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
->
-> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
->
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+## Technologies
+
+- Kotlin and Android Gradle Plugin with Gradle Kotlin DSL
+- Jetpack Compose, Material 3, and Navigation 3
+- Kotlin Coroutines and `StateFlow`
+- libsu for root shell and filesystem access
+- Koin for dependency injection
+
+## Screenshots
+
+<div align="center">
+
+|                                                             Main operation                                                             |                                                              Root file picker                                                               |                                                 Completed operation                                                 |
+|:--------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------:|
+| <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/01.png" alt="DD GUI input, output, and conversion form" width="200"> | <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/02.png" alt="Root file picker browsing block-device entries" width="200"> | <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/03.png" alt="Completed dd operation" width="200"> |
+
+</div>
+
+## Download
+
+<a href="https://apt.izzysoft.de/fdroid/index/apk/com.androidvip.ddgui"><img alt="Get it on IzzyOnDroid" height="64" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"/></a>
+<a href="https://xdaforums.com/t/app-7-0-dd-gui-a-graphical-interface-for-the-dd-command.4054763/"><img alt="Get it on XDA Labs" height="64" src="https://i.imgur.com/Pz29bXH.png"/></a>
+
+## Build
+
+The project uses Gradle 9.6, Android Gradle Plugin 9.5, Android SDK 37, and Java 11 bytecode. Use a JDK supported by the pinned Gradle and Android Gradle Plugin versions, and install Android SDK Platform 37.
+
+```sh
+./gradlew :app:assembleDebug
+./gradlew test
+```
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE.md](LICENSE.md).

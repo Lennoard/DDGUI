@@ -1,0 +1,4 @@
+- Added an explicit review and final confirmation before write operations.
+- Added warnings before selecting special or unrecognized filesystem entries, including possible block devices.
+- Updated the interface to adaptive Jetpack Compose screens.
+- Migrated Gradle build scripts to Kotlin DSL and disabled dependency metadata in APKs and App Bundles.
