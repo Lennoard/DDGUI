@@ -8,6 +8,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -20,7 +25,7 @@ fun FilePickerScreen(
     state: FilePickerUiState,
     effects: Flow<FilePickerEffect>,
     onEvent: (FilePickerEvent) -> Unit,
-    onFileSelected: (String) -> Unit,
+    onFileSelect: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -36,12 +41,13 @@ fun FilePickerScreen(
         listingFailedMessage,
         createFileFailedMessage,
         createFolderFailedMessage,
-        unexpectedFailureMessage
+        unexpectedFailureMessage,
+        onFileSelect
     ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             effects.collect { effect ->
                 when (effect) {
-                    is FilePickerEffect.FileSelected -> onFileSelected(effect.path)
+                    is FilePickerEffect.FileSelected -> onFileSelect(effect.path)
                     is FilePickerEffect.ShowMessage -> {
                         val message = when (effect.message) {
                             FilePickerMessage.ListingFailed -> listingFailedMessage
@@ -103,6 +109,40 @@ fun FilePickerScreen(
             dismissButton = {
                 TextButton(onClick = { onEvent(FilePickerEvent.DismissCreateEntry) }) {
                     Text(stringResource(android.R.string.cancel))
+                }
+            }
+        )
+    }
+
+    state.pendingSpecialEntry?.let { entry ->
+        AlertDialog(
+            onDismissRequest = { onEvent(FilePickerEvent.CancelSelectSpecialEntry) },
+            title = { Text(stringResource(R.string.special_entry_title)) },
+            text = {
+                val warning = stringResource(R.string.special_entry_warning)
+                Text(
+                    buildAnnotatedString {
+                        withStyle(
+                            SpanStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold
+                            )
+                        ) {
+                            append("\"${entry.path}\"")
+                        }
+                        append(" ")
+                        append(warning)
+                    }
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { onEvent(FilePickerEvent.ConfirmSelectSpecialEntry) }) {
+                    Text(stringResource(R.string.select_anyway))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onEvent(FilePickerEvent.CancelSelectSpecialEntry) }) {
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )

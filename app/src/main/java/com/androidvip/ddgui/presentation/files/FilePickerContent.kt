@@ -334,8 +334,8 @@ private fun FilePickerToolbar(
 private fun Breadcrumbs(
     path: String,
     onNavigate: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    compactHeight: Boolean
+    compactHeight: Boolean,
+    modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
     Row(
@@ -506,12 +506,12 @@ private fun DirectoryColumn(
 
 @Composable
 private fun FileEntryGrid(
-    modifier: Modifier = Modifier,
     entries: ImmutableList<FileEntryUiModel>,
     fileSizes: ImmutableMap<String, FileSizeUiState>,
     onEvent: (FilePickerEvent) -> Unit,
+    modifier: Modifier = Modifier,
     columns: GridCells = GridCells.Adaptive(minSize = 220.dp),
-    compactHeight: Boolean = false,
+    compactHeight: Boolean = false
 ) {
     LazyVerticalGrid(
         columns = columns,
@@ -543,7 +543,7 @@ private fun FileEntryItem(
         entry.name
     )
     if (entry.isFile) {
-        LaunchedEffect(entry.path) {
+        LaunchedEffect(entry.path, onEvent) {
             onEvent(FilePickerEvent.LoadFileSize(entry.path))
         }
     }

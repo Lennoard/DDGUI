@@ -147,7 +147,7 @@ private fun InputPathCard(
     PathCard(
         title = stringResource(R.string.input),
         value = path,
-        onValueChanged = { onEvent(MainUiEvent.InputChanged(it)) },
+        onValueChange = { onEvent(MainUiEvent.InputChanged(it)) },
         onPick = { onEvent(MainUiEvent.OpenPicker(PickerTarget.Input)) },
         modifier = modifier,
         imeAction = ImeAction.Next,
@@ -166,7 +166,7 @@ private fun OutputPathCard(
     PathCard(
         title = stringResource(R.string.output),
         value = path,
-        onValueChanged = { onEvent(MainUiEvent.OutputChanged(it)) },
+        onValueChange = { onEvent(MainUiEvent.OutputChanged(it)) },
         onPick = { onEvent(MainUiEvent.OpenPicker(PickerTarget.Output)) },
         modifier = modifier,
         imeAction = ImeAction.Done,
@@ -239,12 +239,12 @@ private fun ConversionOption(
 private fun PathCard(
     title: String,
     value: String,
-    onValueChanged: (String) -> Unit,
+    onValueChange: (String) -> Unit,
     onPick: () -> Unit,
-    modifier: Modifier = Modifier,
     imeAction: ImeAction,
-    focusRequester: FocusRequester? = null,
-    onImeAction: () -> Unit
+    onImeAction: () -> Unit,
+    modifier: Modifier = Modifier,
+    focusRequester: FocusRequester? = null
 ) {
     Card(modifier.fillMaxWidth()) {
         Column(
@@ -257,7 +257,7 @@ private fun PathCard(
             )
             OutlinedTextField(
                 value = value,
-                onValueChange = onValueChanged,
+                onValueChange = onValueChange,
                 modifier = Modifier
                     .fillMaxWidth()
                     .then(

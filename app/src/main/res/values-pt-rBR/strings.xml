@@ -49,6 +49,9 @@
     <string name="file_entry">Arquivo: %1$s</string>
     <string name="file_size_unavailable">Tamanho indisponível</string>
     <string name="file_picker_title">Selecionar um arquivo</string>
+    <string name="special_entry_title">Arquivo especial ou não reconhecido</string>
+    <string name="special_entry_warning">não foi reconhecido como arquivo comum ou diretório. Ele pode ser um dispositivo de bloco, como uma partição de boot ou recovery, ou outro tipo de entrada especial.\n\nComo input, o dd fará a leitura. Como output, gravará diretamente no arquivo e poderá sobrescrever ou danificar dados. O root ou a política de segurança do dispositivo ainda pode negar o acesso.</string>
+    <string name="select_anyway">Selecionar mesmo assim</string>
     <string name="destructive_review_title">Revise a operação de gravação</string>
     <string name="destructive_review_warning">Esta operação grava no destino e pode sobrescrever dados existentes. Confira os dois caminhos e todas as opções antes de continuar.</string>
     <string name="review_source">Origem</string>

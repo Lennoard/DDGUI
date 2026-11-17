@@ -37,14 +37,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.androidvip.ddgui.R
 
 @Composable
-fun DisclaimerRoute(
+internal fun DisclaimerRoute(
     viewModel: DisclaimerViewModel,
     onContinue: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(viewModel, lifecycleOwner) {
+    LaunchedEffect(viewModel, lifecycleOwner, onContinue) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.effects.collect { effect ->
                 when (effect) {
@@ -116,14 +116,14 @@ private fun DisclaimerScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp)
                             .toggleable(
                                 value = state.accepted,
                                 role = Role.Checkbox,
                                 onValueChange = {
                                     onEvent(DisclaimerUiEvent.AcceptanceChanged(it))
                                 }
-                            ),
+                            )
+                            .padding(top = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(

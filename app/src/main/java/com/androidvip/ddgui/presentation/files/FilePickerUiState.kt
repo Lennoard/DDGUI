@@ -26,6 +26,7 @@ data class FilePickerUiState(
     val isLoading: Boolean = false,
     val listingFailed: Boolean = false,
     val errorMessage: String? = null,
+    val pendingSpecialEntry: FileEntryUiModel? = null,
     val newEntryType: NewEntryType? = null,
     val newEntryName: String = ""
 )
@@ -66,6 +67,8 @@ sealed interface FilePickerEvent {
     data object NavigateForward : FilePickerEvent
     data class NavigateToPath(val path: String) : FilePickerEvent
     data class Select(val entry: FileEntryUiModel) : FilePickerEvent
+    data object ConfirmSelectSpecialEntry : FilePickerEvent
+    data object CancelSelectSpecialEntry : FilePickerEvent
     data class LoadFileSize(val path: String) : FilePickerEvent
     data object ShowCreateFile : FilePickerEvent
     data object ShowCreateFolder : FilePickerEvent

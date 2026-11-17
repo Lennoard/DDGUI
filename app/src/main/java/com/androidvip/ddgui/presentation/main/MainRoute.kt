@@ -38,7 +38,7 @@ private val navigationBackStackSaver = listSaver<SnapshotStateList<String>, Stri
 )
 
 @Composable
-fun MainRoute(
+internal fun MainRoute(
     mainViewModel: MainViewModel,
     filePickerViewModel: FilePickerViewModel,
     onExit: () -> Unit,
@@ -157,7 +157,7 @@ fun MainRoute(
                         state = pickerState,
                         effects = filePickerViewModel.effects,
                         onEvent = filePickerViewModel::onEvent,
-                        onFileSelected = { path ->
+                        onFileSelect = { path ->
                             mainViewModel.onEvent(MainUiEvent.FileSelected(path))
                             filePickerViewModel.onEvent(FilePickerEvent.Close)
                             backStack.removeLastOrNull()

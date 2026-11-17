@@ -118,6 +118,93 @@ class FilePickerViewModelTest {
     }
 
     @Test
+    fun `given an unrecognized entry when confirmed then emits its path`() = runTest {
+        // Given
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        try {
+            val specialEntry = RootFileEntry(
+                path = "/dev/block/by-name/boot",
+                name = "boot",
+                isDirectory = false,
+                isFile = false
+            )
+            val repository = mockk<RootFileRepository>()
+            coEvery { repository.list("/") } returns DirectoryListingResult.Success(
+                listOf(specialEntry)
+            )
+            val viewModel = FilePickerViewModel(repository)
+
+            // When
+            viewModel.onEvent(FilePickerEvent.Open)
+            val loaded = viewModel.uiState.first { !it.isLoading && it.entries.isNotEmpty() }
+            viewModel.onEvent(FilePickerEvent.Select(loaded.entries.single()))
+
+            // Then
+            assertEquals(loaded.entries.single(), viewModel.uiState.value.pendingSpecialEntry)
+
+            // When
+            viewModel.onEvent(FilePickerEvent.ConfirmSelectSpecialEntry)
+            val effect = viewModel.effects.first()
+
+            // Then
+            assertEquals(FilePickerEffect.FileSelected(specialEntry.path), effect)
+            assertEquals(null, viewModel.uiState.value.pendingSpecialEntry)
+            viewModel.onEvent(FilePickerEvent.Close)
+        } finally {
+            Dispatchers.resetMain()
+        }
+    }
+
+    @Test
+    fun `given an unrecognized entry when canceled then does not select it`() = runTest {
+        // Given
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        try {
+            val repository = mockk<RootFileRepository>()
+            coEvery { repository.list("/") } returns DirectoryListingResult.Success(
+                listOf(
+                    RootFileEntry(
+                        path = "/dev/block/by-name/boot",
+                        name = "boot",
+                        isDirectory = false,
+                        isFile = false
+                    ),
+                    RootFileEntry(
+                        path = "/backup.img",
+                        name = "backup.img",
+                        isDirectory = false,
+                        isFile = true
+                    )
+                )
+            )
+            val viewModel = FilePickerViewModel(repository)
+
+            // When
+            viewModel.onEvent(FilePickerEvent.Open)
+            val loaded = viewModel.uiState.first { !it.isLoading && it.entries.size == 2 }
+            viewModel.onEvent(
+                FilePickerEvent.Select(loaded.entries.single { it.path.endsWith("/boot") })
+            )
+            viewModel.onEvent(FilePickerEvent.CancelSelectSpecialEntry)
+
+            // Then
+            assertEquals(null, viewModel.uiState.value.pendingSpecialEntry)
+
+            // When
+            viewModel.onEvent(
+                FilePickerEvent.Select(loaded.entries.single { it.path == "/backup.img" })
+            )
+            val effect = viewModel.effects.first()
+
+            // Then
+            assertEquals(FilePickerEffect.FileSelected("/backup.img"), effect)
+            viewModel.onEvent(FilePickerEvent.Close)
+        } finally {
+            Dispatchers.resetMain()
+        }
+    }
+
+    @Test
     fun `given a newer directory request when older request completes then keeps newer entries`() = runTest {
         // Given
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))

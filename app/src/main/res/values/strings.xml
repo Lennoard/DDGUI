@@ -47,19 +47,22 @@
     <string name="no">No</string>
     <string name="directory_entry">Folder: %1$s</string>
     <string name="file_entry">File: %1$s</string>
-    <string name="file_size_unavailable" tools:ignore="MissingTranslation">Size unavailable</string>
-    <string name="file_picker_title" tools:ignore="MissingTranslation">Select a file</string>
-    <string name="destructive_review_title" tools:ignore="MissingTranslation">Review write operation</string>
-    <string name="destructive_review_warning" tools:ignore="MissingTranslation">This operation writes to the destination and may overwrite existing data. Verify both paths and every option before continuing.</string>
-    <string name="review_source" tools:ignore="MissingTranslation">Source</string>
-    <string name="review_destination" tools:ignore="MissingTranslation">Destination</string>
-    <string name="review_conversions" tools:ignore="MissingTranslation">Selected conversions</string>
-    <string name="review_no_conversions" tools:ignore="MissingTranslation">None</string>
-    <string name="confirm_write" tools:ignore="MissingTranslation">I understand, proceed with write</string>
-    <string name="cancel" tools:ignore="MissingTranslation">Cancel</string>
-    <string name="settings_title" tools:ignore="MissingTranslation">Settings</string>
-    <string name="back" tools:ignore="MissingTranslation">Back</string>
-    <string name="show_write_warning" tools:ignore="MissingTranslation">Show a warning dialog before each write</string>
-    <string name="warning_dialog_disabled_note" tools:ignore="MissingTranslation">When disabled, a review and a separate final confirmation are still required.</string>
-    <string name="settings_unavailable" tools:ignore="MissingTranslation">Could not read or save settings. The write warning remains enabled.</string>
+    <string name="file_size_unavailable">Size unavailable</string>
+    <string name="file_picker_title">Select a file</string>
+    <string name="special_entry_title">Special or unrecognized file</string>
+    <string name="special_entry_warning">is not a regular file or directory. It may be a block device (such as boot or recovery) or another special entry.\n\nAs input, dd reads from it. As output, dd writes directly to it and may overwrite data. Root or device security policy may still deny access.</string>
+    <string name="select_anyway">Select anyway</string>
+    <string name="destructive_review_title">Review write operation</string>
+    <string name="destructive_review_warning">This operation writes to the destination and may overwrite existing data. Verify both paths and every option before continuing.</string>
+    <string name="review_source">Source</string>
+    <string name="review_destination">Destination</string>
+    <string name="review_conversions">Selected conversions</string>
+    <string name="review_no_conversions">None</string>
+    <string name="confirm_write">I understand, proceed with write</string>
+    <string name="cancel">Cancel</string>
+    <string name="settings_title">Settings</string>
+    <string name="back">Back</string>
+    <string name="show_write_warning">Show a warning dialog before each write</string>
+    <string name="warning_dialog_disabled_note">When disabled, a review and a separate final confirmation are still required.</string>
+    <string name="settings_unavailable">Could not read or save settings. The write warning remains enabled.</string>
 </resources>

@@ -47,6 +47,8 @@ class FilePickerViewModel(private val fileRepository: RootFileRepository) : View
             FilePickerEvent.NavigateForward -> navigateForward()
             is FilePickerEvent.NavigateToPath -> navigateToPath(event.path)
             is FilePickerEvent.Select -> select(event.entry)
+            FilePickerEvent.ConfirmSelectSpecialEntry -> confirmSelectSpecialEntry()
+            FilePickerEvent.CancelSelectSpecialEntry -> cancelSelectSpecialEntry()
             is FilePickerEvent.LoadFileSize -> loadFileSize(event.path)
             FilePickerEvent.ShowCreateFile -> showCreateEntry(NewEntryType.File)
             FilePickerEvent.ShowCreateFolder -> showCreateEntry(NewEntryType.Folder)
@@ -76,6 +78,7 @@ class FilePickerViewModel(private val fileRepository: RootFileRepository) : View
             it.copy(
                 isLoading = false,
                 fileSizes = persistentMapOf(),
+                pendingSpecialEntry = null,
                 newEntryType = null,
                 newEntryName = ""
             )
@@ -127,23 +130,36 @@ class FilePickerViewModel(private val fileRepository: RootFileRepository) : View
     }
 
     private fun select(entry: FileEntryUiModel) {
-        if (!entry.isDirectory && entry.isFile) {
-            emit(FilePickerEffect.FileSelected(entry.path))
-        } else {
-            val state = _uiState.value
-            val parentPath = parentPath(entry.path)
-            val parentIndex = state.directoryHistory.indexOf(parentPath)
-            val history = if (parentIndex >= 0) {
-                state.directoryHistory.take(parentIndex + 1).toPersistentList()
-            } else {
-                persistentListOf(parentPath)
+        when {
+            entry.isDirectory -> {
+                val state = _uiState.value
+                val parentPath = parentPath(entry.path)
+                val parentIndex = state.directoryHistory.indexOf(parentPath)
+                val history = if (parentIndex >= 0) {
+                    state.directoryHistory.take(parentIndex + 1).toPersistentList()
+                } else {
+                    persistentListOf(parentPath)
+                }
+                navigate(
+                    path = entry.path,
+                    forwardPath = state.forwardPath,
+                    directoryHistory = history.adding(entry.path)
+                )
             }
-            navigate(
-                path = entry.path,
-                forwardPath = state.forwardPath,
-                directoryHistory = history.adding(entry.path)
-            )
+
+            entry.isFile -> emit(FilePickerEffect.FileSelected(entry.path))
+            else -> _uiState.update { it.copy(pendingSpecialEntry = entry) }
         }
+    }
+
+    private fun confirmSelectSpecialEntry() {
+        val entry = _uiState.value.pendingSpecialEntry ?: return
+        _uiState.update { it.copy(pendingSpecialEntry = null) }
+        emit(FilePickerEffect.FileSelected(entry.path))
+    }
+
+    private fun cancelSelectSpecialEntry() {
+        _uiState.update { it.copy(pendingSpecialEntry = null) }
     }
 
     private fun loadFileSize(path: String) {
