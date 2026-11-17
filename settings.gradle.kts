@@ -5,8 +5,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 dependencyResolutionManagement {
@@ -14,9 +15,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri('https://jitpack.io') }
+        maven(url = "https://jitpack.io")
     }
 }
 
-rootProject.name = 'DD GUI'
-include ':app', ':domain', ':data'
+rootProject.name = "DD GUI"
+include(":app", ":domain", ":data")

@@ -1,0 +1,32 @@
+plugins {
+    id("com.android.library")
+}
+
+android {
+    namespace = "com.androidvip.ddgui.data"
+    compileSdk = 37
+
+    defaultConfig {
+        minSdk = 24
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    implementation(project(":domain"))
+    implementation(libs.coroutines.android)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.preference)
+    implementation(libs.koin.android)
+    implementation(libs.libsu.core)
+    implementation(libs.libsu.io)
+    implementation(libs.koin.core)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+}
