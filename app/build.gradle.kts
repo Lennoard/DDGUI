@@ -11,8 +11,8 @@ android {
         applicationId = "com.androidvip.ddgui"
         minSdk = 24
         targetSdk = 37
-        versionCode = 5
-        versionName = "1.0.1"
+        versionCode = 6
+        versionName = "2.0.0"
         androidResources {
             localeFilters.addAll(listOf("en", "de", "pt-rBR"))
         }
